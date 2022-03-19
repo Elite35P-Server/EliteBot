@@ -16,7 +16,7 @@ class APITasks(commands.Cog):
         self.bot = bot
         self.logger = getLogger('api_tasks')
         self.api_base = os.environ.get("API_URL")
-        self.youtube_data = {}
+        self.youtube_channel = {}
         self.api_tasks.start()
 
     def cog_unload(self):
@@ -30,7 +30,7 @@ class APITasks(commands.Cog):
                 if resp.status != 200:
                     self.logger.error("API Contact Error!!")
                     return
-                self.youtube_data = await resp.json()
+                self.youtube_channel = await resp.json()
                 
     
         
