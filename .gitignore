@@ -2,4 +2,4 @@ venv/
 .env
 __pycache__/
 cogs/__pycache__/
-to be replaced
+logs/logs.log

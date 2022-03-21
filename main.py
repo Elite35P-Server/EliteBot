@@ -26,7 +26,7 @@ bot.load_extension('cogs.api_tasks')
 async def on_ready():
     # Bot起動時にターミナルに通知を出す
     logger.info('-'*30)
-    logger.info('EliteBotが起動しました')
+    logger.info('EliteBot is ready.')
     logger.info('-'*30)
     timestamp = int(time.time())
     bot_chid = int(os.environ.get("BOT_CHID"))
@@ -34,15 +34,15 @@ async def on_ready():
     bot_ch = bot.get_channel(bot_chid)
     #await bot_ch.send(f"<t:{timestamp}:F>\nEliteBotが起動しました")
     #check_api = await bot_ch.send("MikoAPIへの接続を確認中...")
-    logger.info("MikoAPIへの接続を確認中...")
+    logger.info("Checking API connection...")
     async with aiohttp.ClientSession() as session:
         async with session.get(os.environ.get("API_URL")) as res:
             if res.status == 200:
                 #await check_api.edit("MikoAPIへの接続に成功しました")
-                logger.info("MikoAPIへの接続に成功しました")
+                logger.info("API connection success.")
             else:
                 #await check_api.edit("MikoAPIへの接続に失敗しました")
-                logger.error("MikoAPIへの接続に失敗しました")
+                logger.error("API connection failed.")
 
 
 if __name__ == "__main__":
