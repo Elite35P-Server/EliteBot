@@ -3,3 +3,4 @@ venv/
 __pycache__/
 cogs/__pycache__/
 logs/logs.log
+data_db.sqlite
