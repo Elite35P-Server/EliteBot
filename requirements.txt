@@ -1,2 +1,7 @@
 git+https://github.com/Pycord-Development/pycord
+python-dotenv
 aiohttp
+pydantic
+mysqlclient
+mysql-connector-python
+sqlalchemy
