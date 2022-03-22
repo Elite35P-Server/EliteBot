@@ -3,8 +3,6 @@ from sqlalchemy import desc, asc
 from sqlalchemy.sql.expression import delete
 from cogs import schemas, models
 
-yt_id = 'UC-hM6YJuNYVAmUWxeIr9FeA'
-
 
 def get_ytch(db: Session, id: str):
     return db.query(models.YouTubeChannel).filter(models.YouTubeChannel.id == id).first()
