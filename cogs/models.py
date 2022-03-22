@@ -2,7 +2,7 @@ from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime, P
 from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy.orm import relationship
 from datetime import datetime as dt
-from db import Base
+from cogs.db import Base
 
 class YouTubeChannel(Base):
     __tablename__ = "yt_channel"
@@ -16,8 +16,8 @@ class YouTubeChannel(Base):
     video_count = Column(Integer)
     status = Column(String(8), default='none')
     videos = relationship('YouTubeVideo', back_populates='yt_channel')
-    comments = relationship('YouTubeComment', back_populates='yt_channel')
-    live_comments = relationship('YouTubeLiveComment', back_populates='yt_channel')
+    #comments = relationship('YouTubeComment', back_populates='yt_channel')
+    #live_comments = relationship('YouTubeLiveComment', back_populates='yt_channel')
     updated_at = Column(DateTime, default=dt.utcnow, nullable=True)
 
 
@@ -66,8 +66,8 @@ class YouTubeVideo(Base):
     play_count = Column(Integer)
     like_count = Column(Integer)
     comment_count = Column(Integer)
-    comments = relationship('YouTubeComment', back_populates='yt_video')
-    live_comments = relationship('YouTubeLiveComment', back_populates='yt_video')
+    #comments = relationship('YouTubeComment', back_populates='yt_video')
+    #live_comments = relationship('YouTubeLiveComment', back_populates='yt_video')
     status = Column(String(8), default='none')
     current_viewers = Column(Integer, nullable=True)
     ss_time = Column(DateTime, nullable=True)

@@ -1,7 +1,9 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import desc, asc
 from sqlalchemy.sql.expression import delete
-import schemas, models
+from cogs import schemas, models
+
+yt_id = 'UC-hM6YJuNYVAmUWxeIr9FeA'
 
 
 def get_ytch(db: Session, id: str):
@@ -39,48 +41,6 @@ def get_ytvideos_commentcount(db: Session, skip: int = 0, limit: int = 5):
 
 def get_ytvideos_status(db: Session, status: str, skip: int = 0, limit: int = 5):
     return db.query(models.YouTubeVideo).filter(models.YouTubeVideo.status == status).order_by(desc(models.YouTubeVideo.ss_time)).offset(skip).limit(limit).all()
-
-def get_ytcomment(db: Session, id: str):
-    return db.query(models.YouTubeComment).filter(models.YouTubeComment.id == id).first()
-
-def get_ytcomments(db: Session, skip: int = 0, limit: int = 135):
-    return db.query(models.YouTubeComment).offset(skip).limit(limit).all()
-
-def get_ytcomments_date(db: Session, skip: int = 0, limit: int = 135):
-    return db.query(models.YouTubeComment).order_by(desc(models.YouTubeComment.created_at)).offset(skip).limit(limit).all()
-
-def get_ytcomments_date_byuser(db: Session, author_id: str, skip: int = 0, limit: int = 135):
-    return db.query(models.YouTubeComment).filter(models.YouTubeComment.author_id == author_id).order_by(desc(models.YouTubeComment.created_at)).offset(skip).limit(limit).all()
-
-def get_ytcomments_date_byvid(db: Session, video_id: str, skip: int = 0, limit: int = 135):
-    return db.query(models.YouTubeComment).filter(models.YouTubeComment.video_id == video_id).order_by(desc(models.YouTubeComment.created_at)).offset(skip).limit(limit).all()
-
-def get_ytcomments_likecount(db: Session, skip: int = 0, limit: int = 5):
-    return db.query(models.YouTubeComment).order_by(desc(models.YouTubeComment.like_count)).offset(skip).limit(limit).all()
-
-def get_ytcomments_likecount_byvid(db: Session, video_id: str, skip: int = 0, limit: int = 5):
-    return db.query(models.YouTubeComment).filter(models.YouTubeComment.video_id == video_id).order_by(desc(models.YouTubeComment.like_count)).offset(skip).limit(limit).all()
-
-def get_ytlivecomment(db: Session, id: str):
-    return db.query(models.YouTubeLiveComment).filter(models.YouTubeLiveComment.id == id).first()
-
-def get_ytlivecomments(db: Session, skip: int = 0, limit: int = 135):
-    return db.query(models.YouTubeLiveComment).offset(skip).limit(limit).all()
-
-def get_ytlivecomments_date(db: Session, skip: int = 0, limit: int = 135):
-    return db.query(models.YouTubeLiveComment).order_by(desc(models.YouTubeLiveComment.updated_at)).offset(skip).limit(limit).all()
-
-def get_ytlivecomments_chatno_byvid(db: Session, video_id: str, skip: int = 0, limit: int = 135):
-    return db.query(models.YouTubeLiveComment).filter(models.YouTubeLiveComment.video_id == video_id).order_by(asc(models.YouTubeLiveComment.chat_no)).offset(skip).limit(limit).all()
-
-def get_ytlivecomments_chatno_byuser(db: Session, ch_id: str, skip: int = 0, limit: int = 135):
-    return db.query(models.YouTubeLiveComment).filter(models.YouTubeLiveComment.author_id == ch_id).order_by(asc(models.YouTubeLiveComment.chat_no)).offset(skip).limit(limit).all()
-
-def get_ytlivecomments_type_byvid(db: Session, video_id: str, type: str, skip: int = 0, limit: int = 135):
-    return db.query(models.YouTubeLiveComment).filter(models.YouTubeLiveComment.video_id == video_id).filter(models.YouTubeLiveComment.type == type).order_by(asc(models.YouTubeLiveComment.chat_no)).offset(skip).limit(limit).all()
-
-def get_ytlivecomments_badge_byvid(db: Session, video_id: str, badge: str, skip: int = 0, limit: int = 135):
-    return db.query(models.YouTubeLiveComment).filter(models.YouTubeLiveComment.video_id == video_id).filter(models.YouTubeLiveComment.author_badge == badge).order_by(asc(models.YouTubeLiveComment.chat_no)).offset(skip).limit(limit).all()
 
 def get_twspace(db: Session, id: str):
     return db.query(models.TwitterSpace).filter(models.TwitterSpace.id == id).first()
