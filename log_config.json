@@ -33,6 +33,11 @@
             "handlers": ["consoleHandler", "fileHandler"],
             "propagate": false
         },
+        "notification_tasks": {
+            "level": "DEBUG",
+            "handlers": ["consoleHandler", "fileHandler"],
+            "propagate": false
+        },
         "same_hierarchy": {
             "level": "DEBUG",
             "handlers": ["consoleHandler", "fileHandler"],

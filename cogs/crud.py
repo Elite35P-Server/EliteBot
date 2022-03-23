@@ -5,79 +5,79 @@ from cogs import schemas, models
 
 
 def get_ytch(db: Session, id: str):
-    return db.query(models.YouTubeChannel).filter(models.YouTubeChannel.id == id).first()
+    return db.query(models.YouTubeChannelLatest).filter(models.YouTubeChannelLatest.id == id).first()
 
 def get_twac(db: Session, id: str):
-    return db.query(models.TwitterAccount).filter(models.TwitterAccount.id == id).first()
+    return db.query(models.TwitterAccountLatest).filter(models.TwitterAccountLatest.id == id).first()
 
 def get_tcch(db: Session, id: str):
-    return db.query(models.TwitchChannel).filter(models.TwitchChannel.id == id).first()
+    return db.query(models.TwitchChannelLatest).filter(models.TwitchChannelLatest.id == id).first()
 
 def get_ytvideo(db: Session, id: str):
-    return db.query(models.YouTubeVideo).filter(models.YouTubeVideo.id == id).first()
+    return db.query(models.YouTubeVideoLatest).filter(models.YouTubeVideoLatest.id == id).first()
 
 def get_ytvideos(db: Session, skip: int = 0, limit: int = 5):
-    return db.query(models.YouTubeVideo).offset(skip).limit(limit).all()
+    return db.query(models.YouTubeVideoLatest).offset(skip).limit(limit).all()
 
 def get_ytvideos_date(db: Session, skip: int = 0, limit: int = 5):
-    return db.query(models.YouTubeVideo).order_by(desc(models.YouTubeVideo.created_at)).offset(skip).limit(limit).all()
+    return db.query(models.YouTubeVideoLatest).order_by(desc(models.YouTubeVideoLatest.created_at)).offset(skip).limit(limit).all()
 
 def get_ytvideos_date_byuser(db: Session, ch_id: str, skip: int = 0, limit: int = 5):
-    return db.query(models.YouTubeVideo).filter(models.YouTubeVideo.ch_id == ch_id).order_by(desc(models.YouTubeVideo.created_at)).offset(skip).limit(limit).all()
+    return db.query(models.YouTubeVideoLatest).filter(models.YouTubeVideoLatest.ch_id == ch_id).order_by(desc(models.YouTubeVideoLatest.created_at)).offset(skip).limit(limit).all()
 
 def get_ytvideos_sstime(db: Session, skip: int = 0, limit: int = 5):
-    return db.query(models.YouTubeVideo).order_by(desc(models.YouTubeVideo.ss_time)).offset(skip).limit(limit).all()
+    return db.query(models.YouTubeVideoLatest).order_by(desc(models.YouTubeVideoLatest.ss_time)).offset(skip).limit(limit).all()
 
 def get_ytvideos_playcount(db: Session, skip: int = 0, limit: int = 5):
-    return db.query(models.YouTubeVideo).order_by(desc(models.YouTubeVideo.play_count)).offset(skip).limit(limit).all()
+    return db.query(models.YouTubeVideoLatest).order_by(desc(models.YouTubeVideoLatest.play_count)).offset(skip).limit(limit).all()
 
 def get_ytvideos_likecount(db: Session, skip: int = 0, limit: int = 5):
-    return db.query(models.YouTubeVideo).order_by(desc(models.YouTubeVideo.like_count)).offset(skip).limit(limit).all()
+    return db.query(models.YouTubeVideoLatest).order_by(desc(models.YouTubeVideoLatest.like_count)).offset(skip).limit(limit).all()
 
 def get_ytvideos_commentcount(db: Session, skip: int = 0, limit: int = 5):
-    return db.query(models.YouTubeVideo).order_by(desc(models.YouTubeVideo.comment_count)).offset(skip).limit(limit).all()
+    return db.query(models.YouTubeVideoLatest).order_by(desc(models.YouTubeVideoLatest.comment_count)).offset(skip).limit(limit).all()
 
 def get_ytvideos_status(db: Session, status: str, skip: int = 0, limit: int = 5):
-    return db.query(models.YouTubeVideo).filter(models.YouTubeVideo.status == status).order_by(desc(models.YouTubeVideo.ss_time)).offset(skip).limit(limit).all()
+    return db.query(models.YouTubeVideoLatest).filter(models.YouTubeVideoLatest.status == status).order_by(desc(models.YouTubeVideoLatest.ss_time)).offset(skip).limit(limit).all()
 
 def get_twspace(db: Session, id: str):
-    return db.query(models.TwitterSpace).filter(models.TwitterSpace.id == id).first()
+    return db.query(models.TwitterSpaceLatest).filter(models.TwitterSpaceLatest.id == id).first()
 
 def get_twspaces(db: Session, skip: int = 0, limit: int = 5):
-    return db.query(models.TwitterSpace).offset(skip).limit(limit).all()
+    return db.query(models.TwitterSpaceLatest).offset(skip).limit(limit).all()
 
 def get_twspaces_date(db: Session, skip: int = 0, limit: int = 5):
-    return db.query(models.TwitterSpace).order_by(desc(models.TwitterSpace.created_at)).offset(skip).limit(limit).all()
+    return db.query(models.TwitterSpaceLatest).order_by(desc(models.TwitterSpaceLatest.created_at)).offset(skip).limit(limit).all()
 
 def get_twspaces_sstime(db: Session, skip: int = 0, limit: int = 5):
-    return db.query(models.TwitterSpace).order_by(desc(models.TwitterSpace.ss_time)).offset(skip).limit(limit).all()
+    return db.query(models.TwitterSpaceLatest).order_by(desc(models.TwitterSpaceLatest.ss_time)).offset(skip).limit(limit).all()
 
 def get_twspaces_status(db: Session, status: str, skip: int = 0, limit: int = 5):
-    return db.query(models.TwitterSpace).filter(models.TwitterSpace.status == status).order_by(desc(models.TwitterSpace.created_at)).offset(skip).limit(limit).all()
+    return db.query(models.TwitterSpaceLatest).filter(models.TwitterSpaceLatest.status == status).order_by(desc(models.TwitterSpaceLatest.created_at)).offset(skip).limit(limit).all()
 
 def get_twte(db: Session, id: str):
-    return db.query(models.TwitterTweet).filter(models.TwitterTweet.id == id).first()
+    return db.query(models.TwitterTweetLatest).filter(models.TwitterTweetLatest.id == id).first()
 
 def get_twtes(db: Session, skip: int = 0, limit: int = 5):
-    return db.query(models.TwitterTweet).offset(skip).limit(limit).all()
+    return db.query(models.TwitterTweetLatest).offset(skip).limit(limit).all()
 
 def get_twtes_date(db: Session, skip: int = 0, limit: int = 5):
-    return db.query(models.TwitterTweet).order_by(desc(models.TwitterTweet.created_at)).offset(skip).limit(limit).all()
+    return db.query(models.TwitterTweetLatest).order_by(desc(models.TwitterTweetLatest.created_at)).offset(skip).limit(limit).all()
 
 def get_twtes_date_byuser(db: Session, user_id: str, skip: int = 0, limit: int = 5):
-    return db.query(models.TwitterTweet).filter(models.TwitterTweet.user_id == user_id).order_by(desc(models.TwitterTweet.created_at)).offset(skip).limit(limit).all()
+    return db.query(models.TwitterTweetLatest).filter(models.TwitterTweetLatest.user_id == user_id).order_by(desc(models.TwitterTweetLatest.created_at)).offset(skip).limit(limit).all()
 
 def get_tcstream(db: Session, id: str):
-    return db.query(models.TwitchStream).filter(models.TwitchStream.id == id).first()
+    return db.query(models.TwitchStreamLatest).filter(models.TwitchStreamLatest.id == id).first()
 
 def get_tcstreams(db: Session, skip: int = 0, limit: int = 5):
-    return db.query(models.TwitchStream).offset(skip).limit(limit).all()
+    return db.query(models.TwitchStreamLatest).offset(skip).limit(limit).all()
 
 def get_tcstreams_date(db: Session, skip: int = 0, limit: int = 5):
-    return db.query(models.TwitchStream).order_by(desc(models.TwitchStream.created_at)).offset(skip).limit(limit).all()
+    return db.query(models.TwitchStreamLatest).order_by(desc(models.TwitchStreamLatest.created_at)).offset(skip).limit(limit).all()
 
 def get_tcstreams_status(db: Session, status: str, skip: int = 0, limit: int = 5):
-    return db.query(models.TwitchStream).filter(models.TwitchStream.status == status).order_by(desc(models.TwitchStream.created_at)).offset(skip).limit(limit).all()
+    return db.query(models.TwitchStreamLatest).filter(models.TwitchStreamLatest.status == status).order_by(desc(models.TwitchStreamLatest.created_at)).offset(skip).limit(limit).all()
 
 def update_ytch(db: Session, ch: schemas.YouTubeCh):
     ch_db = get_ytch(db, id=ch.id)
@@ -94,7 +94,7 @@ def update_ytch(db: Session, ch: schemas.YouTubeCh):
             db.commit()
             
     else:
-        ch_db = models.YouTubeChannel(id=ch.id,
+        ch_db = models.YouTubeChannelLatest(id=ch.id,
                                       name=ch.name,
                                       icon=ch.icon,
                                       description=ch.description,
@@ -125,7 +125,7 @@ def update_twac(db: Session, tw: schemas.Twitter):
             db.commit()
             
     else:
-        tw_db = models.TwitterAccount(id=tw.id,
+        tw_db = models.TwitterAccountLatest(id=tw.id,
                                       display_id=tw.display_id,
                                       name=tw.name,
                                       icon=tw.icon,
@@ -142,7 +142,7 @@ def update_twac(db: Session, tw: schemas.Twitter):
     return tw_db.updated_at
 
 def create_twte(db: Session, te: schemas.TwitterTweet):
-    te_db = models.TwitterTweet(
+    te_db = models.TwitterTweetLatest(
         id=te.id,
         user_id=te.user_id,
         display_id=te.display_id,
@@ -179,7 +179,7 @@ def update_tcch(db: Session, ch: schemas.TwitchCh):
             db.commit()
             
     else:
-        ch_db = models.TwitchChannel(id=ch.id,
+        ch_db = models.TwitchChannelLatest(id=ch.id,
                                      display_id=ch.display_id,
                                      name=ch.name,
                                      icon=ch.icon,
@@ -215,7 +215,7 @@ def update_ytvideo(db: Session, ch_id: str, video: schemas.YouTubeVideo):
             db.commit()
             
     else:
-        video_db = models.YouTubeVideo(
+        video_db = models.YouTubeVideoLatest(
             ch_id=ch_id,
             id=video.id,
             title=video.title,
@@ -254,7 +254,7 @@ def update_twspace(db: Session, tw_id: str, space: schemas.TwitterSpace):
             db.commit()
             
     else:
-        space_db = models.TwitterSpace(
+        space_db = models.TwitterSpaceLatest(
             tw_id=tw_id,
             id=space.id,
             title=space.title,
@@ -295,7 +295,7 @@ def update_tcstream(db: Session, ch_id: str, stream: schemas.TwitchStream):
             db.refresh(stream_db)
             
     else:
-        stream_db = models.TwitchStream(
+        stream_db = models.TwitchStreamLatest(
             ch_id=ch_id,
             id=stream.id,
             stream_id=stream.stream_id,

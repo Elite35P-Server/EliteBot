@@ -15,11 +15,6 @@ class APITasks(commands.Cog):
         self.bot = bot
         self.logger = getLogger('api_tasks')
         self.api_base = os.environ.get("API_URL")
-        self.twitch_channel = {}
-        self.twitch_streams = []
-        self.twitter_account = {}
-        self.twitter_space = []
-        
         self.youtube_data.start()
         self.twitch_data.start()
         self.twitter_data.start()
