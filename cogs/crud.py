@@ -7,11 +7,17 @@ from cogs import schemas, models
 def get_ytch(db: Session, id: str):
     return db.query(models.YouTubeChannelLatest).filter(models.YouTubeChannelLatest.id == id).first()
 
+def get_ytch_old(db: Session, id: str):
+    return db.query(models.YouTubeChannelOld).filter(models.YouTubeChannelOld.id == id).first()
+
 def get_twac(db: Session, id: str):
     return db.query(models.TwitterAccountLatest).filter(models.TwitterAccountLatest.id == id).first()
 
 def get_tcch(db: Session, id: str):
     return db.query(models.TwitchChannelLatest).filter(models.TwitchChannelLatest.id == id).first()
+
+def get_tcch_old(db: Session, id: str):
+    return db.query(models.TwitchChannelOld).filter(models.TwitchChannelOld.id == id).first()
 
 def get_ytvideo(db: Session, id: str):
     return db.query(models.YouTubeVideoLatest).filter(models.YouTubeVideoLatest.id == id).first()
@@ -109,6 +115,36 @@ def update_ytch(db: Session, ch: schemas.YouTubeCh):
 
     return ch_db.updated_at
 
+def update_ytch_old(db: Session, ch: schemas.YouTubeCh):
+    ch_db = get_ytch_old(db, id=ch.id)
+    if ch_db:
+        if ch_db.name!=ch.name or ch_db.icon!=ch.icon or ch_db.description!=ch.description or ch_db.subsc_count!=ch.subsc_count or ch_db.play_count!=ch.play_count or ch_db.video_count!=ch.video_count or ch_db.status!= ch.status:
+            ch_db.name = ch.name
+            ch_db.icon = ch.icon
+            ch_db.description = ch.description
+            ch_db.subsc_count = ch.subsc_count
+            ch_db.play_count = ch.play_count
+            ch_db.video_count = ch.video_count
+            ch_db.status = ch.status
+            ch_db.updated_at = ch.updated_at
+            db.commit()
+            
+    else:
+        ch_db = models.YouTubeChannelOld(id=ch.id,
+                                      name=ch.name,
+                                      icon=ch.icon,
+                                      description=ch.description,
+                                      subsc_count=ch.subsc_count,
+                                      play_count=ch.play_count,
+                                      video_count=ch.video_count,
+                                      status=ch.status,
+                                      updated_at=ch.updated_at)
+        db.add(ch_db)
+        db.commit()
+        db.refresh(ch_db)
+
+    return ch_db.updated_at
+
 def update_twac(db: Session, tw: schemas.Twitter):
     tw_db = get_twac(db, id=tw.id)
     if tw_db:
@@ -180,6 +216,38 @@ def update_tcch(db: Session, ch: schemas.TwitchCh):
             
     else:
         ch_db = models.TwitchChannelLatest(id=ch.id,
+                                     display_id=ch.display_id,
+                                     name=ch.name,
+                                     icon=ch.icon,
+                                     offline_img=ch.offline_img,
+                                     description=ch.description,
+                                     subsc_count=ch.subsc_count,
+                                     play_count=ch.play_count,
+                                     status=ch.status,
+                                     updated_at=ch.updated_at)
+        db.add(ch_db)
+        db.commit()
+        db.refresh(ch_db)
+
+    return ch_db.updated_at
+
+def update_tcch_old(db: Session, ch: schemas.TwitchCh):
+    ch_db = get_tcch_old(db, id=ch.id)
+    if ch_db:
+        if ch_db.display_id!=ch.display_id or ch_db.name!=ch.name or ch_db.icon!=ch.icon or ch_db.offline_img!=ch.offline_img or ch_db.description!=ch.description or ch_db.subsc_count!=ch.subsc_count or ch_db.play_count!=ch.play_count or ch_db.status!= ch.status:
+            ch_db.display_id = ch.display_id
+            ch_db.name = ch.name
+            ch_db.icon = ch.icon
+            ch_db.offline_img = ch.offline_img
+            ch_db.description = ch.description
+            ch_db.subsc_count = ch.subsc_count
+            ch_db.play_count = ch.play_count
+            ch_db.status = ch.status
+            ch_db.updated_at = ch.updated_at
+            db.commit()
+            
+    else:
+        ch_db = models.TwitchChannelOld(id=ch.id,
                                      display_id=ch.display_id,
                                      name=ch.name,
                                      icon=ch.icon,

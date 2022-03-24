@@ -14,20 +14,64 @@ class Notification(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.logger = getLogger('notification_tasks')
-        self.mikonotice_chid = int(os.environ.get("MIKONOTICE_CHID"))
-        self.youtube_notice.start()
+        self.notice_chid = int(os.environ.get('MIKONOTICE_CHID'))
+        self.youtube_id = os.environ.get('YOUTUBE')
+        self.twitter_id = os.environ.get('TWITTER')
+        self.twitch_id = os.environ.get('TWITCH')
+        self.ytch_notice.start()
     
     def cog_unload(self):
-        self.youtube_notice.cancel()
+        self.ytch_notice.cancel()
 
 
     # YouTube Notice
     @tasks.loop(seconds=5)
-    async def youtube_notice(self):
-        return
+    async def ytch_notice(self):
+        with SessionLocal() as db:
+            ch_latest = crud.get_ytch(db, self.youtube_id)
+            ch_old = crud.get_ytch_old(db, self.youtube_id)
+        if not ch_latest:
+            self.logger.error('Not found YouTube channel in DB.')
+            return
+        if not ch_old:
+            self.logger.warn('Not found YouTube channel in Old DB.')
+            crud.update_ytch_old(db, ch_latest)
+            return
+        
+        # YouTubeチャンネル名が変更された時
+        if ch_latest.name != ch_old.name:
+            self.logger.info(f'Update YouTube channel name. {ch_old.name} -> {ch_latest.name}')
+            ch_old.name = ch_latest.name
+            
+        # YouTubeチャンネルアイコンが変更された時
+        if ch_latest.icon != ch_old.icon:
+            self.logger.info(f'Update YouTube channel icon. {ch_old.icon} -> {ch_latest.icon}')
+            ch_old.icon = ch_latest.icon
+        
+        # YouTubeチャンネル概要が変更された時
+        if ch_latest.description != ch_old.description:
+            self.logger.info(f'Update YouTube channel description. {ch_old.description} -> {ch_latest.description}')
+            ch_old.description = ch_latest.description
+            
+        # YouTubeチャンネル登録者数が更新された時
+        if ch_latest.subsc_count != ch_old.subsc_count:
+            self.logger.info(f'Update YouTube channel subscriber count. {ch_old.subsc_count} -> {ch_latest.subsc_count}')
+            ch_old.subsc_count = ch_latest.subsc_count
+            
+        # YouTubeチャンネル総再生回数が更新された時
+        if ch_latest.play_count != ch_old.play_count:
+            self.logger.info(f'Update YouTube channel total play count. {ch_old.play_count} -> {ch_latest.play_count}')
+            ch_old.play_count = ch_latest.play_count
+            
+        # YouTubeチャンネル総動画本数が更新された時
+        if ch_latest.video_count != ch_old.video_count:
+            self.logger.info(f'Update YouTube channel total video count. {ch_old.video_count} -> {ch_latest.video_count}')
+            ch_old.video_count = ch_latest.video_count
+            
+        
 
     
-    @youtube_notice.before_loop
+    @ytch_notice.before_loop
     async def wait_notification_tasks(self):
         await self.bot.wait_until_ready()
         self.logger.info('Notification tasks start waiting...')

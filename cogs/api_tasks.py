@@ -14,7 +14,7 @@ class APITasks(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.logger = getLogger('api_tasks')
-        self.api_base = os.environ.get("API_URL")
+        self.api_base = os.environ.get('API_URL')
         self.youtube_data.start()
         self.twitch_data.start()
         self.twitter_data.start()
@@ -32,7 +32,7 @@ class APITasks(commands.Cog):
         }
         async with session.get(url=self.api_base + url, headers=headers, params=params) as resp:
             if resp.status != 200:
-                self.logger.error("API connection failed.", resp.text)
+                self.logger.error('API connection failed.', resp.text)
                 return
             return await resp.json()
         
