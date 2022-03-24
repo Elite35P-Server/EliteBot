@@ -29,21 +29,21 @@ async def on_ready():
     logger.info('EliteBot is ready.')
     logger.info('-'*30)
     timestamp = int(time.time())
-    bot_chid = int(os.environ.get("BOT_CHID"))
+    bot_chid = int(os.environ.get('BOT_CHID'))
     await bot.change_presence(activity=discord.Game(name="Nyahello!! I'm Elite Nye!"))
     bot_ch = bot.get_channel(bot_chid)
     #await bot_ch.send(f"<t:{timestamp}:F>\nEliteBotが起動しました")
     #check_api = await bot_ch.send("MikoAPIへの接続を確認中...")
-    logger.info("Checking API connection...")
+    logger.info('Checking API connection...')
     async with aiohttp.ClientSession() as session:
-        async with session.get(os.environ.get("API_URL")) as res:
+        async with session.get(os.environ.get('API_URL')) as res:
             if res.status == 200:
                 #await check_api.edit("MikoAPIへの接続に成功しました")
-                logger.info("API connection success.")
+                logger.info('API connection success.')
             else:
                 #await check_api.edit("MikoAPIへの接続に失敗しました")
-                logger.error("API connection failed.")
+                logger.error('API connection failed.')
 
 
-if __name__ == "__main__":
-    bot.run(os.environ.get("BOT_TOKEN"))
+if __name__ == '__main__':
+    bot.run(os.environ.get('BOT_TOKEN'))
