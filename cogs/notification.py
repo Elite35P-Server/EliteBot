@@ -35,6 +35,7 @@ class Notification(commands.Cog):
             ch_latest = crud.get_ytch(db, self.youtube_id)
             ch_old = crud.get_ytch_old(db, self.youtube_id)
             
+
             if not ch_latest:
                 self.logger.error('Not found YouTube channel in DB.')
                 return
@@ -52,33 +53,41 @@ class Notification(commands.Cog):
                 ch_old.name = ch_latest.name
                 
             # YouTubeチャンネルアイコンが変更された時
-            if ch_latest.icon != ch_old.icon:
-                self.logger.info(f'Update YouTube channel icon. {ch_old.icon} -> {ch_latest.icon}')
-                msg = await notice_ch.send(embed=embed_msg.ytch_notice_icon(ch_latest.id, ch_latest.name, ch_latest.icon, ch_old.icon))
-                await msg.publish()
-                ch_old.icon = ch_latest.icon
+            #if ch_latest.icon != ch_old.icon:
+            #    self.logger.info(f'Update YouTube channel icon. {ch_old.icon} -> {ch_latest.icon}')
+            #    msg = await notice_ch.send(embed=embed_msg.ytch_notice_icon(ch_latest.id, ch_latest.name, ch_latest.icon, ch_old.icon))
+            #    await msg.publish()
+            #    ch_old.icon = ch_latest.icon
             
             # YouTubeチャンネル概要が変更された時
-            if ch_latest.description != ch_old.description:
-                self.logger.info(f'Update YouTube channel description. {ch_old.description} -> {ch_latest.description}')
-                msg = await notice_ch.send(embed=embed_msg.ytch_notice_description(ch_latest.id, ch_latest.name, ch_latest.icon))
-                await msg.publish()
-                ch_old.description = ch_latest.description
+            #if ch_latest.description != ch_old.description:
+            #    self.logger.info(f'Update YouTube channel description.')
+            #    msg = await notice_ch.send(embed=embed_msg.ytch_notice_description(ch_latest.id, ch_latest.name, ch_latest.icon))
+            #    await msg.publish()
+            #    ch_old.description = ch_latest.description
                 
             # YouTubeチャンネル登録者数が更新された時
             if ch_latest.subsc_count != ch_old.subsc_count:
                 self.logger.info(f'Update YouTube channel subscriber count. {ch_old.subsc_count} -> {ch_latest.subsc_count}')
+                msg = await notice_ch.send(embed=embed_msg.ytch_notice_subsc(ch_latest.id, ch_latest.name, ch_latest.icon, ch_latest.subsc_count))
+                await msg.publish()
                 ch_old.subsc_count = ch_latest.subsc_count
                 
             # YouTubeチャンネル総再生回数が更新された時
             if ch_latest.play_count != ch_old.play_count:
                 self.logger.info(f'Update YouTube channel total play count. {ch_old.play_count} -> {ch_latest.play_count}')
-                ch_old.play_count = ch_latest.play_count
+                if round(ch_latest.play_count, -6) > round(ch_old.play_count, -6):
+                    msg = await notice_ch.send(embed=embed_msg.ytch_notice_play(ch_latest.id, ch_latest.name, ch_latest.icon, ch_latest.play_count))
+                    await msg.publish()
+                    ch_old.play_count = ch_latest.play_count
                 
             # YouTubeチャンネル総動画本数が更新された時
             if ch_latest.video_count != ch_old.video_count:
                 self.logger.info(f'Update YouTube channel total video count. {ch_old.video_count} -> {ch_latest.video_count}')
-                ch_old.video_count = ch_latest.video_count
+                if round(ch_latest.video_count, -2) > round(ch_old.video_count, -2):
+                    msg = await notice_ch.send(embed=embed_msg.ytch_notice_video(ch_latest.id, ch_latest.name, ch_latest.icon, ch_latest.video_count))
+                    await msg.publish()
+                    ch_old.video_count = ch_latest.video_count
                 
             db.commit()
             
