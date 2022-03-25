@@ -35,7 +35,6 @@ class Notification(commands.Cog):
             ch_latest = crud.get_ytch(db, self.youtube_id)
             ch_old = crud.get_ytch_old(db, self.youtube_id)
             
-
             if not ch_latest:
                 self.logger.error('Not found YouTube channel in DB.')
                 return

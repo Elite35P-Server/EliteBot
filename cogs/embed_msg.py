@@ -3,8 +3,7 @@ import time
 from datetime import datetime as dt
 
 def ytch_notice_name(id: str, old_name: str, new_name: str, icon: str):
-    embed=discord.Embed(title="YouTubeのチャンネル名が変更されました", color=0xff0000, timestamp=dt.now())
-    embed.set_author(name=new_name, url=f"https://www.youtube.com/channel/{id}")
+    embed=discord.Embed(title=new_name, url=f"https://www.youtube.com/channel/{id}", description="YouTubeのチャンネル名が変更されました", color=0xff0000, timestamp=dt.now())
     embed.set_thumbnail(url=icon)
     embed.add_field(name="変更前", value=f"**{old_name}**", inline=True)
     embed.add_field(name="変更後", value=f"**{new_name}**", inline=True)
