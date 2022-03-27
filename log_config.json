@@ -18,7 +18,8 @@
             "class": "logging.FileHandler",
             "level": "INFO",
             "formatter": "simple",
-            "filename": "logs/logs.log"
+            "filename": "logs/logs.log",
+            "encoding": "utf-8"
         }
     },
 
