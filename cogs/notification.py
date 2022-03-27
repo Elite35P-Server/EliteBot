@@ -68,7 +68,7 @@ class Notification(commands.Cog):
             # YouTubeチャンネル登録者数が更新された時
             if ch_latest.subsc_count != ch_old.subsc_count:
                 self.logger.info(f'Update YouTube channel subscriber count. {ch_old.subsc_count} -> {ch_latest.subsc_count}')
-                msg = await notice_ch.send(embed=embed_msg.ytch_notice_subsc(ch_latest.id, ch_latest.name, ch_latest.icon, ch_latest.subsc_count))
+                msg = await notice_ch.send(embed=embed_msg.ytch_notice_subsc(ch_latest.id, ch_latest.name, ch_latest.icon, ch_latest.subsc_count, ch_latest.updated_at))
                 await msg.publish()
                 ch_old.subsc_count = ch_latest.subsc_count
                 
@@ -76,7 +76,7 @@ class Notification(commands.Cog):
             if ch_latest.play_count != ch_old.play_count:
                 self.logger.info(f'Update YouTube channel total play count. {ch_old.play_count} -> {ch_latest.play_count}')
                 if int(ch_latest.play_count/1000000) > int(ch_old.play_count/1000000):
-                    msg = await notice_ch.send(embed=embed_msg.ytch_notice_play(ch_latest.id, ch_latest.name, ch_latest.icon, ch_latest.play_count))
+                    msg = await notice_ch.send(embed=embed_msg.ytch_notice_play(ch_latest.id, ch_latest.name, ch_latest.icon, ch_latest.play_count, ch_latest.updated_at))
                     await msg.publish()
                 ch_old.play_count = ch_latest.play_count
                 
@@ -84,7 +84,7 @@ class Notification(commands.Cog):
             if ch_latest.video_count != ch_old.video_count:
                 self.logger.info(f'Update YouTube channel total video count. {ch_old.video_count} -> {ch_latest.video_count}')
                 if int(ch_latest.video_count/100) > int(ch_old.video_count/100):
-                    msg = await notice_ch.send(embed=embed_msg.ytch_notice_video(ch_latest.id, ch_latest.name, ch_latest.icon, ch_latest.video_count))
+                    msg = await notice_ch.send(embed=embed_msg.ytch_notice_video(ch_latest.id, ch_latest.name, ch_latest.icon, ch_latest.video_count, ch_latest.updated_at))
                     await msg.publish()
                 ch_old.video_count = ch_latest.video_count
                 
@@ -133,7 +133,7 @@ class Notification(commands.Cog):
                         # YouTube動画タイトルが変更された時
                         if video_latest.title != video_old.title:
                             self.logger.info(f'Update YouTube video title. ID: {video_latest.id}, Title: {video_old.title} -> {video_latest.title}')
-                            msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_title(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.url, video_latest.thumbnails['standard']['url'], video_old.title, video_latest.title))
+                            msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_title(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.url, video_latest.id, video_old.title, video_latest.title))
                             await msg.publish()
                             video_old.title = video_latest.title
                             
@@ -163,10 +163,10 @@ class Notification(commands.Cog):
                         if video_latest.status != video_old.status:
                             self.logger.info(f'Update YouTube video status. ID: {video_latest.id}, Title: {video_latest.title}, Status: {video_old.status} -> {video_latest.status}')
                             if video_old.status == 'upcoming' or video_latest.status == 'live':
-                                msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_upcomingtolive(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.thumbnails['standard']['url'], video_latest.ss_time, video_latest.as_time))
+                                msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_upcomingtolive(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, video_latest.ss_time, video_latest.as_time))
                                 await msg.publish()
                             elif video_old.status == 'live' and video_latest.status == 'none':
-                                msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_livetonone(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.thumbnails['standard']['url'], video_latest.as_time, video_latest.ae_time))
+                                msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_livetonone(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, video_latest.as_time, video_latest.ae_time))
                                 await msg.publish()
                             video_old.status = video_latest.status
                             
@@ -174,20 +174,24 @@ class Notification(commands.Cog):
                         if video_latest.current_viewers != video_old.current_viewers:
                             self.logger.info(f'Update YouTube stream current viewers. ID: {video_latest.id}, Title: {video_latest.title}, CurrentViewers: {video_old.current_viewers} -> {video_latest.current_viewers}')
                             if video_latest.current_viewers >= 50000:
-                                pass
+                                msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_currentviewers(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, 50000, video_latest.current_viewers, video_latest.updated_at))
+                                await msg.publish()
                             elif video_latest.current_viewers >= 100000:
-                                pass
+                                msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_currentviewers(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, 100000, video_latest.current_viewers, video_latest.updated_at))
+                                await msg.publish()
                             elif video_latest.current_viewers >= 150000:
-                                pass
+                                msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_currentviewers(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, 150000, video_latest.current_viewers, video_latest.updated_at))
+                                await msg.publish()
                             elif video_latest.current_viewers >= 200000:
-                                pass
+                                msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_currentviewers(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, 200000, video_latest.current_viewers, video_latest.updated_at))
+                                await msg.publish()
                             
                             video_old.current_viewers = video_latest.current_viewers
                             
                         # YouTube動画配信開始予定時刻が更新された時
                         if video_latest.ss_time != video_old.ss_time:
                             self.logger.info(f'Update YouTube video scheduled start time. ID: {video_latest.id}, Title: {video_latest.title}, ScheduledStartTime: {video_old.ss_time} -> {video_latest.ss_time}')
-                            msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_sstime(ch_latest.id, ch_latest.name, ch_latest.icon,  video_latest.title, video_latest.url, video_latest.thumbnails['standard']['url'], video_old.ss_time, video_latest.ss_time))
+                            msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_sstime(ch_latest.id, ch_latest.name, ch_latest.icon,  video_latest.title, video_latest.url, video_latest.id, video_old.ss_time, video_latest.ss_time))
                             await msg.publish()
                             video_old.ss_time = video_latest.ss_time
                             
@@ -209,13 +213,13 @@ class Notification(commands.Cog):
                     # YouTube配信待機枠または動画が作成された時
                     self.logger.info(f'New YouTube video. ID: {video_latest.id}, Title: {video_latest.title}')
                     if video_latest.status == 'upcoming':
-                        msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_nonetoupcoming(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.thumbnails['standard']['url'], video_latest.ss_time))
+                        msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_nonetoupcoming(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, video_latest.ss_time))
                         await msg.publish()
                     elif video_latest.status == 'live':
-                        msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_nonetolive(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.thumbnails['standard']['url'], video_latest.as_time))
+                        msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_nonetolive(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, video_latest.as_time))
                         await msg.publish()
                     elif video_latest.status == 'none' and video_latest.ss_time ==  None and video_latest.as_time ==  None and video_latest.ae_time ==  None:
-                        msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_upload(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.thumbnails['standard']['url'], video_latest.created_at))
+                        msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_upload(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, video_latest.created_at))
                         await msg.publish()
                     
                     video = schemas.YouTubeVideo(
