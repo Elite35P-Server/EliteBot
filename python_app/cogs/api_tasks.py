@@ -2,10 +2,11 @@ import asyncio
 import aiohttp
 import os
 from discord.ext import tasks, commands
-from cogs import crud, models, schemas
-from cogs.db import SessionLocal, engine
+from python_app.cogs import crud, models
+from python_app.cogs.db import SessionLocal, engine
 from logging import getLogger, config
 from main import log_config
+from python_app.cogs import schemas
 
 config.dictConfig(log_config)
 models.Base.metadata.create_all(bind=engine)

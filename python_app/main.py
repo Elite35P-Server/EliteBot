@@ -3,7 +3,6 @@ import json
 import os
 import time
 import aiohttp
-from dotenv import load_dotenv
 from os.path import join, dirname
 from logging import getLogger, config
 
@@ -12,9 +11,6 @@ with open('./log_config.json', 'r') as f:
 config.dictConfig(log_config)
 logger = getLogger('main')
 
-load_dotenv(verbose=True)
-dotenv_path = join(dirname(__file__), '.env')
-load_dotenv(dotenv_path)
 
 bot = discord.Bot()
 

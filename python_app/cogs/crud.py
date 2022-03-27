@@ -1,7 +1,8 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import desc, asc
 from sqlalchemy.sql.expression import delete
-from cogs import schemas, models
+from python_app.cogs import models
+from python_app.cogs import schemas
 
 
 def get_ytch(db: Session, id: str):
