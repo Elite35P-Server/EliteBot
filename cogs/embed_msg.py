@@ -109,3 +109,21 @@ def ytvideo_notice_currentviewers(id: str, name: str, icon: str, title: str, url
     embed.add_field(name="現在の同時接続数(視聴者数)", value=f"**{current_viewers:,}人**", inline=True)
     embed.set_footer(text="EliteBot v2", icon_url="https://media.discordapp.net/attachments/788107610943520861/939782491303211018/IMG_6360.png")
     return embed
+
+def ytvideo_notice_play(id: str, name: str, icon: str, title: str, url: str, video_id: str, trigger: int, play_count: int, updated_at: DateTime):
+    embed=discord.Embed(title=title, url=url, description=f"**再生回数が{trigger:,}回を突破しました!**", color=0xff0000, timestamp=dt.utcnow())
+    embed.set_author(name=name, url=f"https://www.youtube.com/channel/{id}", icon_url=icon)
+    embed.set_image(url=f'https://i.ytimg.com/vi/{video_id}/maxresdefault.jpg')
+    embed.add_field(name="達成日時", value=f"**<t:{int(updated_at.timestamp())}:F>(<t:{int(updated_at.timestamp())}:R>)**", inline=True)
+    embed.add_field(name="現在の再生回数", value=f"**{play_count:,}回**", inline=True)
+    embed.set_footer(text="EliteBot v2", icon_url="https://media.discordapp.net/attachments/788107610943520861/939782491303211018/IMG_6360.png")
+    return embed
+
+def ytvideo_notice_play_live(id: str, name: str, icon: str, title: str, url: str, video_id: str, trigger: int, play_count: int, updated_at: DateTime):
+    embed=discord.Embed(title=title, url=url, description=f"**現在行われている配信/プレミア公開動画の再生回数が{trigger:,}回を突破しました!**", color=0xff0000, timestamp=dt.utcnow())
+    embed.set_author(name=name, url=f"https://www.youtube.com/channel/{id}", icon_url=icon)
+    embed.set_image(url=f'https://i.ytimg.com/vi/{video_id}/maxresdefault.jpg')
+    embed.add_field(name="達成日時", value=f"**<t:{int(updated_at.timestamp())}:F>(<t:{int(updated_at.timestamp())}:R>)**", inline=True)
+    embed.add_field(name="現在の再生回数", value=f"**{play_count:,}回**", inline=True)
+    embed.set_footer(text="EliteBot v2", icon_url="https://media.discordapp.net/attachments/788107610943520861/939782491303211018/IMG_6360.png")
+    return embed

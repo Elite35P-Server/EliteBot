@@ -75,9 +75,14 @@ class Notification(commands.Cog):
             # YouTubeチャンネル総再生回数が更新された時
             if ch_latest.play_count != ch_old.play_count:
                 self.logger.info(f'Update YouTube channel total play count. {ch_old.play_count} -> {ch_latest.play_count}')
-                if int(ch_latest.play_count/1000000) > int(ch_old.play_count/1000000):
-                    msg = await notice_ch.send(embed=embed_msg.ytch_notice_play(ch_latest.id, ch_latest.name, ch_latest.icon, ch_latest.play_count, ch_latest.updated_at))
-                    await msg.publish()
+                if ch_latest.play_count < 200000000:
+                    if int(ch_latest.play_count/10000000) > int(ch_old.play_count/10000000):
+                        msg = await notice_ch.send(embed=embed_msg.ytch_notice_play(ch_latest.id, ch_latest.name, ch_latest.icon, ch_latest.play_count, ch_latest.updated_at))
+                        await msg.publish()
+                else:
+                    if int(ch_latest.play_count/20000000) > int(ch_old.play_count/20000000):
+                        msg = await notice_ch.send(embed=embed_msg.ytch_notice_play(ch_latest.id, ch_latest.name, ch_latest.icon, ch_latest.play_count, ch_latest.updated_at))
+                        await msg.publish()
                 ch_old.play_count = ch_latest.play_count
                 
             # YouTubeチャンネル総動画本数が更新された時
@@ -145,6 +150,33 @@ class Notification(commands.Cog):
                         # YouTube動画再生回数が更新された時
                         if video_latest.play_count != video_old.play_count:
                             self.logger.info(f'Update YouTube video play count. ID: {video_latest.id}, Title: {video_latest.title}, PlayCount: {video_old.play_count} -> {video_latest.play_count}')
+                            if video_latest.play_count < 1000000:
+                                if int(video_latest.play_count/100000) > int(video_old.play_count/100000):
+                                    trigger = int(video_latest.play_count/100000)*100000
+                                    if video_latest.status == 'live':
+                                        msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_play_live(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, trigger, video_latest.play_count, video_latest.updated_at))
+                                        await msg.publish()
+                                    else:
+                                        msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_play_live(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, trigger, video_latest.play_count, video_latest.updated_at))
+                                        await msg.publish()
+                            elif video_latest.play_count < 10000000:
+                                trigger = int(video_latest.play_count/500000)*500000
+                                if int(video_latest.play_count/500000) > int(video_old.play_count/500000):
+                                    if video_latest.status == 'live':
+                                        msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_play_live(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, trigger, video_latest.play_count, video_latest.updated_at))
+                                        await msg.publish()
+                                    else:
+                                        msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_play_live(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, trigger, video_latest.play_count, video_latest.updated_at))
+                                        await msg.publish()
+                            else:
+                                trigger = int(video_latest.play_count/1000000)*1000000
+                                if int(video_latest.play_count/1000000) > int(video_old.play_count/1000000):
+                                    if video_latest.status == 'live':
+                                        msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_play_live(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, trigger, video_latest.play_count, video_latest.updated_at))
+                                        await msg.publish()
+                                    else:
+                                        msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_play_live(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, trigger, video_latest.play_count, video_latest.updated_at))
+                                        await msg.publish()
                             
                             video_old.play_count = video_latest.play_count
                         
