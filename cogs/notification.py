@@ -75,18 +75,18 @@ class Notification(commands.Cog):
             # YouTubeチャンネル総再生回数が更新された時
             if ch_latest.play_count != ch_old.play_count:
                 self.logger.info(f'Update YouTube channel total play count. {ch_old.play_count} -> {ch_latest.play_count}')
-                if round(ch_latest.play_count, -6) > round(ch_old.play_count, -6):
+                if int(ch_latest.play_count/1000000) > int(ch_old.play_count/1000000):
                     msg = await notice_ch.send(embed=embed_msg.ytch_notice_play(ch_latest.id, ch_latest.name, ch_latest.icon, ch_latest.play_count))
                     await msg.publish()
-                    ch_old.play_count = ch_latest.play_count
+                ch_old.play_count = ch_latest.play_count
                 
             # YouTubeチャンネル総動画本数が更新された時
             if ch_latest.video_count != ch_old.video_count:
                 self.logger.info(f'Update YouTube channel total video count. {ch_old.video_count} -> {ch_latest.video_count}')
-                if round(ch_latest.video_count, -2) > round(ch_old.video_count, -2):
+                if int(ch_latest.video_count/100) > int(ch_old.video_count/100):
                     msg = await notice_ch.send(embed=embed_msg.ytch_notice_video(ch_latest.id, ch_latest.name, ch_latest.icon, ch_latest.video_count))
                     await msg.publish()
-                    ch_old.video_count = ch_latest.video_count
+                ch_old.video_count = ch_latest.video_count
                 
             db.commit()
             
@@ -94,7 +94,149 @@ class Notification(commands.Cog):
     # YouTube Video Notice
     @tasks.loop(seconds=5)
     async def ytvideo_notice(self):
+        notice_ch = self.bot.get_channel(self.notice_chid)
         with SessionLocal() as db:
+            ch_latest = crud.get_ytch(db, self.youtube_id)
+            videos_latest = crud.get_ytvideos_date(db)
+            videos_old = crud.get_ytvideos_date_old(db)
+            
+            if videos_latest == []:
+                self.logger.error('Not found YouTube videos in DB.')
+                return
+            
+            
+            for video_latest in videos_latest:
+                if videos_old == []:
+                    self.logger.warn(f'Not found YouTube video in Old DB.')
+                    video = schemas.YouTubeVideo(
+                        id=video_latest.id, 
+                        title=video_latest.title,
+                        thumbnails=video_latest.thumbnails,
+                        description=video_latest.description,
+                        url=video_latest.url,
+                        play_count=video_latest.play_count,
+                        like_count=video_latest.like_count,
+                        comment_count=video_latest.comment_count,
+                        status=video_latest.status,
+                        current_viewers=video_latest.current_viewers,
+                        ss_time=video_latest.ss_time,
+                        as_time=video_latest.as_time,
+                        ae_time=video_latest.ae_time,
+                        created_at=video_latest.created_at,
+                        updated_at=video_latest.updated_at,
+                    )
+                    crud.update_ytvideo_old(db, self.youtube_id, video)
+                    continue
+                
+                for video_old in videos_old:
+                    if video_latest.id == video_old.id:
+                        # YouTube動画タイトルが変更された時
+                        if video_latest.title != video_old.title:
+                            self.logger.info(f'Update YouTube video title. ID: {video_latest.id}, Title: {video_old.title} -> {video_latest.title}')
+                            msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_title(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.url, video_latest.thumbnails['standard']['url'], video_old.title, video_latest.title))
+                            await msg.publish()
+                            video_old.title = video_latest.title
+                            
+                        # YouTube動画概要が変更された時
+                        if video_latest.description != video_old.description:
+                            self.logger.info(f'Update YouTube video description. ID: {video_latest.id}, Title: {video_latest.title}')
+                            video_old.description = video_latest.description
+                            
+                        # YouTube動画再生回数が更新された時
+                        if video_latest.play_count != video_old.play_count:
+                            self.logger.info(f'Update YouTube video play count. ID: {video_latest.id}, Title: {video_latest.title}, PlayCount: {video_old.play_count} -> {video_latest.play_count}')
+                            
+                            video_old.play_count = video_latest.play_count
+                        
+                        # YouTube動画高評価数が更新された時
+                        if video_latest.like_count != video_old.like_count:
+                            self.logger.info(f'Update YouTube video like count. ID: {video_latest.id}, Title: {video_latest.title}, LikeCount: {video_old.like_count} -> {video_latest.like_count}')
+                            
+                            video_old.like_count = video_latest.like_count
+
+                        # YouTube動画コメント数が更新された時
+                        if video_latest.comment_count != video_old.comment_count:
+                            self.logger.info(f'Update YouTube video comment count. ID: {video_latest.id}, Title: {video_latest.title}, CommentCount: {video_old.comment_count} -> {video_latest.comment_count}')
+                            video_old.comment_count = video_latest.comment_count
+                            
+                        # YouTube動画ステータスが更新された時
+                        if video_latest.status != video_old.status:
+                            self.logger.info(f'Update YouTube video status. ID: {video_latest.id}, Title: {video_latest.title}, Status: {video_old.status} -> {video_latest.status}')
+                            if video_old.status == 'upcoming' or video_latest.status == 'live':
+                                msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_upcomingtolive(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.thumbnails['standard']['url'], video_latest.ss_time, video_latest.as_time))
+                                await msg.publish()
+                            elif video_old.status == 'live' and video_latest.status == 'none':
+                                msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_livetonone(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.thumbnails['standard']['url'], video_latest.as_time, video_latest.ae_time))
+                                await msg.publish()
+                            video_old.status = video_latest.status
+                            
+                        # YouTube配信同時接続数が更新された時
+                        if video_latest.current_viewers != video_old.current_viewers:
+                            self.logger.info(f'Update YouTube stream current viewers. ID: {video_latest.id}, Title: {video_latest.title}, CurrentViewers: {video_old.current_viewers} -> {video_latest.current_viewers}')
+                            if video_latest.current_viewers >= 50000:
+                                pass
+                            elif video_latest.current_viewers >= 100000:
+                                pass
+                            elif video_latest.current_viewers >= 150000:
+                                pass
+                            elif video_latest.current_viewers >= 200000:
+                                pass
+                            
+                            video_old.current_viewers = video_latest.current_viewers
+                            
+                        # YouTube動画配信開始予定時刻が更新された時
+                        if video_latest.ss_time != video_old.ss_time:
+                            self.logger.info(f'Update YouTube video scheduled start time. ID: {video_latest.id}, Title: {video_latest.title}, ScheduledStartTime: {video_old.ss_time} -> {video_latest.ss_time}')
+                            msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_sstime(ch_latest.id, ch_latest.name, ch_latest.icon,  video_latest.title, video_latest.url, video_latest.thumbnails['standard']['url'], video_old.ss_time, video_latest.ss_time))
+                            await msg.publish()
+                            video_old.ss_time = video_latest.ss_time
+                            
+                            
+                        # YouTube動画配信開始時刻が更新された時
+                        if video_latest.as_time != video_old.as_time:
+                            self.logger.info(f'Update YouTube video actuary start time. ID: {video_latest.id}, Title: {video_latest.title}, ActuaryStartTime: {video_old.as_time} -> {video_latest.as_time}')
+                            video_old.as_time = video_latest.as_time
+                            
+                        # YouTube動画配信終了時刻が更新された時
+                        if video_latest.ae_time != video_old.ae_time:
+                            self.logger.info(f'Update YouTube video actuary end time. ID: {video_latest.id}, Title: {video_latest.title}, ActuaryEndTime: {video_old.ae_time} -> {video_latest.ae_time}')
+                            video_old.ae_time = video_latest.ae_time
+                            
+                        db.commit()
+                        break
+                    
+                if video_latest.id not in [video.id for video in videos_old]:
+                    # YouTube配信待機枠または動画が作成された時
+                    self.logger.info(f'New YouTube video. ID: {video_latest.id}, Title: {video_latest.title}')
+                    if video_latest.status == 'upcoming':
+                        msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_nonetoupcoming(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.thumbnails['standard']['url'], video_latest.ss_time))
+                        await msg.publish()
+                    elif video_latest.status == 'live':
+                        msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_nonetolive(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.thumbnails['standard']['url'], video_latest.as_time))
+                        await msg.publish()
+                    elif video_latest.status == 'none' and video_latest.ss_time ==  None and video_latest.as_time ==  None and video_latest.ae_time ==  None:
+                        msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_upload(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.thumbnails['standard']['url'], video_latest.created_at))
+                        await msg.publish()
+                    
+                    video = schemas.YouTubeVideo(
+                        id=video_latest.id, 
+                        title=video_latest.title,
+                        thumbnails=video_latest.thumbnails,
+                        description=video_latest.description,
+                        url=video_latest.url,
+                        play_count=video_latest.play_count,
+                        like_count=video_latest.like_count,
+                        comment_count=video_latest.comment_count,
+                        status=video_latest.status,
+                        current_viewers=video_latest.current_viewers,
+                        ss_time=video_latest.ss_time,
+                        as_time=video_latest.as_time,
+                        ae_time=video_latest.ae_time,
+                        created_at=video_latest.created_at,
+                        updated_at=video_latest.updated_at,
+                    )
+                    crud.update_ytvideo_old(db, self.youtube_id, video)
+                    
             return
 
     

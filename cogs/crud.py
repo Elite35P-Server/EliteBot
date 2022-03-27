@@ -22,17 +22,27 @@ def get_tcch_old(db: Session, id: str):
 def get_ytvideo(db: Session, id: str):
     return db.query(models.YouTubeVideoLatest).filter(models.YouTubeVideoLatest.id == id).first()
 
+def get_ytvideo_old(db: Session, id: str):
+    return db.query(models.YouTubeVideoOld).filter(models.YouTubeVideoOld.id == id).first()
+
 def get_ytvideos(db: Session, skip: int = 0, limit: int = 5):
     return db.query(models.YouTubeVideoLatest).offset(skip).limit(limit).all()
 
-def get_ytvideos_date(db: Session, skip: int = 0, limit: int = 5):
-    return db.query(models.YouTubeVideoLatest).order_by(desc(models.YouTubeVideoLatest.created_at)).offset(skip).limit(limit).all()
+def get_ytvideos_date(db: Session):
+    return db.query(models.YouTubeVideoLatest).order_by(desc(models.YouTubeVideoLatest.created_at)).all()
+
+def get_ytvideos_date_old(db: Session):
+    return db.query(models.YouTubeVideoOld).order_by(desc(models.YouTubeVideoOld.created_at)).all()
 
 def get_ytvideos_date_byuser(db: Session, ch_id: str, skip: int = 0, limit: int = 5):
     return db.query(models.YouTubeVideoLatest).filter(models.YouTubeVideoLatest.ch_id == ch_id).order_by(desc(models.YouTubeVideoLatest.created_at)).offset(skip).limit(limit).all()
 
-def get_ytvideos_sstime(db: Session, skip: int = 0, limit: int = 5):
-    return db.query(models.YouTubeVideoLatest).order_by(desc(models.YouTubeVideoLatest.ss_time)).offset(skip).limit(limit).all()
+def get_ytvideos_sstime(db: Session):
+    return db.query(models.YouTubeVideoLatest).order_by(desc(models.YouTubeVideoLatest.ss_time)).all()
+
+def get_ytvideos_sstime_old(db: Session):
+    return db.query(models.YouTubeVideoOld).order_by(desc(models.YouTubeVideoOld.ss_time)).all()
+
 
 def get_ytvideos_playcount(db: Session, skip: int = 0, limit: int = 5):
     return db.query(models.YouTubeVideoLatest).order_by(desc(models.YouTubeVideoLatest.play_count)).offset(skip).limit(limit).all()
@@ -43,8 +53,8 @@ def get_ytvideos_likecount(db: Session, skip: int = 0, limit: int = 5):
 def get_ytvideos_commentcount(db: Session, skip: int = 0, limit: int = 5):
     return db.query(models.YouTubeVideoLatest).order_by(desc(models.YouTubeVideoLatest.comment_count)).offset(skip).limit(limit).all()
 
-def get_ytvideos_status(db: Session, status: str, skip: int = 0, limit: int = 5):
-    return db.query(models.YouTubeVideoLatest).filter(models.YouTubeVideoLatest.status == status).order_by(desc(models.YouTubeVideoLatest.ss_time)).offset(skip).limit(limit).all()
+def get_ytvideos_status(db: Session, status: str):
+    return db.query(models.YouTubeVideoLatest).filter(models.YouTubeVideoLatest.status == status).order_by(desc(models.YouTubeVideoLatest.ss_time)).all()
 
 def get_twspace(db: Session, id: str):
     return db.query(models.TwitterSpaceLatest).filter(models.TwitterSpaceLatest.id == id).first()
@@ -306,6 +316,51 @@ def update_ytvideo(db: Session, ch_id: str, video: schemas.YouTubeVideo):
         db.refresh(video_db)
 
     return video_db.updated_at
+
+def update_ytvideo_old(db: Session, ch_id: str, video: schemas.YouTubeVideo):
+    video_db = get_ytvideo_old(db, id=video.id)
+    if video_db:
+        if video_db.title!=video.title or video_db.description!=video.description or video_db.play_count!=video.play_count or video_db.like_count!=video.like_count or video_db.comment_count!=video.comment_count or video_db.current_viewers!=video.current_viewers or video_db.status!=video.status or video_db.ss_time!=video.ss_time or video_db.as_time!=video.as_time or video_db.ae_time!=video.ae_time:
+            video_db.title = video.title
+            video_db.thumbnails = video.thumbnails
+            video_db.url = video.url
+            video_db.description = video.description
+            video_db.play_count = video.play_count
+            video_db.like_count = video.like_count
+            video_db.comment_count = video.comment_count
+            video_db.status = video.status
+            video_db.current_viewers = video.current_viewers
+            video_db.ss_time = video.ss_time
+            video_db.as_time = video.as_time
+            video_db.ae_time = video.ae_time
+            video_db.updated_at = video.updated_at
+            db.commit()
+            
+    else:
+        video_db = models.YouTubeVideoOld(
+            ch_id=ch_id,
+            id=video.id,
+            title=video.title,
+            thumbnails=video.thumbnails,
+            url=video.url,
+            description=video.description,
+            play_count=video.play_count,
+            like_count=video.like_count,
+            comment_count=video.comment_count,
+            status=video.status,
+            current_viewers=video.current_viewers,
+            ss_time=video.ss_time,
+            as_time=video.as_time,
+            ae_time=video.ae_time,
+            created_at=video.created_at,
+            updated_at=video.updated_at
+        )
+        db.add(video_db)
+        db.commit()
+        db.refresh(video_db)
+
+    return video_db.updated_at
+
 
 def update_twspace(db: Session, tw_id: str, space: schemas.TwitterSpace):
     space_db = get_twspace(db, id=space.id)
