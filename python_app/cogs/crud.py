@@ -87,11 +87,17 @@ def get_twtes_date_byuser(db: Session, user_id: str, skip: int = 0, limit: int =
 def get_tcstream(db: Session, id: str):
     return db.query(models.TwitchStreamLatest).filter(models.TwitchStreamLatest.id == id).first()
 
+def get_tcstream_old(db: Session, id: str):
+    return db.query(models.TwitchStreamOld).filter(models.TwitchStreamOld.id == id).first()
+
 def get_tcstreams(db: Session, skip: int = 0, limit: int = 5):
     return db.query(models.TwitchStreamLatest).offset(skip).limit(limit).all()
 
-def get_tcstreams_date(db: Session, skip: int = 0, limit: int = 5):
-    return db.query(models.TwitchStreamLatest).order_by(desc(models.TwitchStreamLatest.created_at)).offset(skip).limit(limit).all()
+def get_tcstreams_date(db: Session):
+    return db.query(models.TwitchStreamLatest).order_by(desc(models.TwitchStreamLatest.created_at)).all()
+
+def get_tcstreams_date_old(db: Session):
+    return db.query(models.TwitchStreamOld).order_by(desc(models.TwitchStreamOld.created_at)).all()
 
 def get_tcstreams_status(db: Session, status: str, skip: int = 0, limit: int = 5):
     return db.query(models.TwitchStreamLatest).filter(models.TwitchStreamLatest.status == status).order_by(desc(models.TwitchStreamLatest.created_at)).offset(skip).limit(limit).all()
@@ -420,6 +426,53 @@ def update_tcstream(db: Session, ch_id: str, stream: schemas.TwitchStream):
             
     else:
         stream_db = models.TwitchStreamLatest(
+            ch_id=ch_id,
+            id=stream.id,
+            stream_id=stream.stream_id,
+            title=stream.title,
+            description=stream.description,
+            thumbnail=stream.thumbnail,
+            url=stream.url,
+            status=stream.status,
+            type=stream.type,
+            game_id=stream.game_id,
+            game_name=stream.game_name,
+            current_viewers=stream.current_viewers,
+            view_count=stream.view_count,
+            as_time=stream.as_time,
+            ae_time=stream.ae_time,
+            created_at=stream.created_at,
+            updated_at=stream.updated_at
+        )
+        db.add(stream_db)
+        db.commit()
+        db.refresh(stream_db)
+
+    return stream_db.updated_at
+
+def update_tcstream_old(db: Session, ch_id: str, stream: schemas.TwitchStream):
+    stream_db = get_tcstream_old(db, id=stream.id)
+    if stream_db:
+        if stream_db.title!=stream.title or stream_db.description!=stream.description or stream_db.thumbnail!=stream.thumbnail or stream_db.view_count!=stream.view_count or stream_db.current_viewers!=stream.current_viewers or stream_db.status!=stream.status or stream_db.as_time!=stream.as_time or stream_db.ae_time!=stream.ae_time:
+            stream_db.stream_id = stream.stream_id
+            stream_db.title = stream.title
+            stream_db.thumbnail = stream.thumbnail
+            stream_db.description = stream.description
+            stream_db.url = stream.url
+            stream_db.view_count = stream.view_count
+            stream_db.status = stream.status
+            stream_db.type = stream.type
+            stream_db.game_id = stream.game_id
+            stream_db.game_name = stream.game_name
+            stream_db.current_viewers = stream.current_viewers
+            stream_db.as_time = stream.as_time
+            stream_db.ae_time = stream.ae_time
+            stream_db.updated_at = stream.updated_at
+            db.commit()
+            db.refresh(stream_db)
+            
+    else:
+        stream_db = models.TwitchStreamOld(
             ch_id=ch_id,
             id=stream.id,
             stream_id=stream.stream_id,
