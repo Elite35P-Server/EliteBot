@@ -213,15 +213,12 @@ class Notification(commands.Cog):
                         # YouTube配信同時接続数が更新された時
                         if video_latest.current_viewers != video_old.current_viewers:
                             self.logger.info(f'Update YouTube stream current viewers. ID: {video_latest.id}, Title: {video_latest.title}, CurrentViewers: {video_old.current_viewers} -> {video_latest.current_viewers}')
-                            if video_latest.status == 'live':
-                                if video_old.current_viewers == None:
-                                    video_old.current_viewers = video_latest.current_viewers
-                                else:
+                            if video_latest.status == 'live' and video_old.current_viewers != None:
                                     trigger = int(video_latest.current_viewers/50000)*50000
                                     if int(video_latest.current_viewers/50000) > int(video_old.current_viewers/50000):
                                         msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_currentviewers(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, trigger, video_latest.current_viewers, video_latest.updated_at))
                                         await msg.publish()
-                                    video_old.current_viewers = video_latest.current_viewers
+                            video_old.current_viewers = video_latest.current_viewers
                             
                         # YouTube動画配信開始予定時刻が更新された時
                         if video_latest.ss_time != video_old.ss_time:
