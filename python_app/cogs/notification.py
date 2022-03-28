@@ -2,12 +2,12 @@ import discord
 import asyncio
 import os
 from discord.ext import tasks, commands
-from python_app.cogs import crud, models
-from python_app.cogs.db import SessionLocal
-from python_app.cogs import embed_msg
+from cogs import crud, models
+from cogs.db import SessionLocal
+from cogs import embed_msg
 from logging import getLogger, config
 from main import log_config
-from python_app.cogs import schemas
+from cogs import schemas
 
 config.dictConfig(log_config)
 

@@ -2,7 +2,7 @@ FROM python:3.9-slim
 
 RUN apt update && \
     apt full-upgrade -y && \
-    apt install gcc libmariadb-dev -y
+    apt install gcc libmariadb-dev git -y
 
 RUN mkdir /python_app
 

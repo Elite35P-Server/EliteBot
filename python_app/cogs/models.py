@@ -2,7 +2,7 @@ from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime, P
 from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy.orm import relationship
 from datetime import datetime as dt
-from python_app.cogs.db import Base
+from cogs.db import Base
 
 class YouTubeChannelLatest(Base):
     __tablename__ = "yt_channel_latest"

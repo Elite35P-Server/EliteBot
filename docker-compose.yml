@@ -1,10 +1,14 @@
 version: '3'
+
 services:
   bot:
     build:
       context: ./python_app
       dockerfile: Dockerfile
     command:
-      - python main.py
+      - python
+      - main.py
     env_file:
       - .env
+    restart: always
+    tty: true

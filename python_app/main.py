@@ -3,7 +3,6 @@ import json
 import os
 import time
 import aiohttp
-from os.path import join, dirname
 from logging import getLogger, config
 
 with open('./log_config.json', 'r') as f:
