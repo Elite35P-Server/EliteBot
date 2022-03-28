@@ -1,1 +1,4 @@
 .env
+python_app/logs/logs.log
+python_app/__pycache__/
+python_app/cogs/__pycache__/
