@@ -1,5 +1,3 @@
-import discord
-import asyncio
 import os
 from discord.ext import tasks, commands
 from cogs import crud, models
@@ -158,7 +156,7 @@ class Notification(commands.Cog):
                                         msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_play_live(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, trigger, video_latest.play_count, video_latest.updated_at))
                                         await msg.publish()
                                     else:
-                                        msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_play_live(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, trigger, video_latest.play_count, video_latest.updated_at))
+                                        msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_play(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, trigger, video_latest.play_count, video_latest.updated_at))
                                         await msg.publish()
                             elif video_latest.play_count < 10000000:
                                 trigger = int(video_latest.play_count/500000)*500000
@@ -167,7 +165,7 @@ class Notification(commands.Cog):
                                         msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_play_live(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, trigger, video_latest.play_count, video_latest.updated_at))
                                         await msg.publish()
                                     else:
-                                        msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_play_live(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, trigger, video_latest.play_count, video_latest.updated_at))
+                                        msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_play(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, trigger, video_latest.play_count, video_latest.updated_at))
                                         await msg.publish()
                             else:
                                 trigger = int(video_latest.play_count/1000000)*1000000
@@ -176,7 +174,7 @@ class Notification(commands.Cog):
                                         msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_play_live(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, trigger, video_latest.play_count, video_latest.updated_at))
                                         await msg.publish()
                                     else:
-                                        msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_play_live(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, trigger, video_latest.play_count, video_latest.updated_at))
+                                        msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_play(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, trigger, video_latest.play_count, video_latest.updated_at))
                                         await msg.publish()
                             
                             video_old.play_count = video_latest.play_count
@@ -184,7 +182,14 @@ class Notification(commands.Cog):
                         # YouTube動画高評価数が更新された時
                         if video_latest.like_count != video_old.like_count:
                             self.logger.info(f'Update YouTube video like count. ID: {video_latest.id}, Title: {video_latest.title}, LikeCount: {video_old.like_count} -> {video_latest.like_count}')
-                            
+                            trigger = int(video_latest.like_count/10000)*10000
+                            if int(video_latest.like_count/10000) < int(video_old.like_count/10000):
+                                if video_latest.status == 'live':
+                                    msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_like_live(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, trigger, video_latest.play_count, video_latest.updated_at))
+                                    await msg.publish()
+                                else:
+                                    msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_like_live(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, trigger, video_latest.play_count, video_latest.updated_at))
+                                    await msg.publish()
                             video_old.like_count = video_latest.like_count
 
                         # YouTube動画コメント数が更新された時
@@ -206,19 +211,10 @@ class Notification(commands.Cog):
                         # YouTube配信同時接続数が更新された時
                         if video_latest.current_viewers != video_old.current_viewers:
                             self.logger.info(f'Update YouTube stream current viewers. ID: {video_latest.id}, Title: {video_latest.title}, CurrentViewers: {video_old.current_viewers} -> {video_latest.current_viewers}')
-                            if video_latest.current_viewers >= 50000:
-                                msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_currentviewers(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, 50000, video_latest.current_viewers, video_latest.updated_at))
+                            trigger = int(video_latest.current_viewers/50000)*50000
+                            if int(video_latest.current_viewers/50000) > int(video_old.current_viewers/50000):
+                                msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_currentviewers(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, trigger, video_latest.current_viewers, video_latest.updated_at))
                                 await msg.publish()
-                            elif video_latest.current_viewers >= 100000:
-                                msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_currentviewers(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, 100000, video_latest.current_viewers, video_latest.updated_at))
-                                await msg.publish()
-                            elif video_latest.current_viewers >= 150000:
-                                msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_currentviewers(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, 150000, video_latest.current_viewers, video_latest.updated_at))
-                                await msg.publish()
-                            elif video_latest.current_viewers >= 200000:
-                                msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_currentviewers(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, 200000, video_latest.current_viewers, video_latest.updated_at))
-                                await msg.publish()
-                            
                             video_old.current_viewers = video_latest.current_viewers
                             
                         # YouTube動画配信開始予定時刻が更新された時
