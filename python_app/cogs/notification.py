@@ -20,10 +20,12 @@ class Notification(commands.Cog):
         self.twitch_id = os.environ.get('TWITCH')
         self.ytch_notice.start()
         self.ytvideo_notice.start()
+        self.tcch_notice.start()
     
     def cog_unload(self):
         self.ytch_notice.cancel()
         self.ytvideo_notice.cancel()
+        self.tcch_notice.cancel()
 
 
     # YouTube Channel Notice
@@ -269,12 +271,81 @@ class Notification(commands.Cog):
                         updated_at=video_latest.updated_at,
                     )
                     crud.update_ytvideo_old(db, self.youtube_id, video)
-                    
-            return
+        
+
+    # Twitch Channel Notice
+    @tasks.loop(seconds=5)
+    async def tcch_notice(self):
+        notice_ch = self.bot.get_channel(self.notice_chid)
+        with SessionLocal() as db:
+            ch_latest = crud.get_tcch(db, self.twitch_id)
+            ch_old = crud.get_tcch_old(db, self.twitch_id)
+            
+            if not ch_latest:
+                self.logger.error('Not found Twitch channel in DB.')
+                return
+            if not ch_old:
+                self.logger.warn('Not found Twitch channel in Old DB.')
+                crud.update_tcch_old(db, ch_latest)
+                return
+        
+
+            # Twitchチャンネル名が変更された時
+            if ch_latest.name != ch_old.name:
+                self.logger.info(f'Update Twitch channel name. {ch_old.name} -> {ch_latest.name}')
+                msg = await notice_ch.send(embed=embed_msg.tcch_notice_name(ch_latest.display_id, ch_old.name, ch_latest.name, ch_latest.icon))
+                await msg.publish()
+                ch_old.name = ch_latest.name
+                
+            # TwitchチャンネルディスプレイIDが変更された時
+            if ch_latest.display_id != ch_old.display_id:
+                self.logger.info(f'Update Twitch channel display id. {ch_old.display_id} -> {ch_latest.display_id}')
+                msg = await notice_ch.send(embed=embed_msg.tcch_notice_displayid(ch_latest.name, ch_old.display_id, ch_latest.display_id, ch_latest.icon))
+                await msg.publish()
+                ch_old.display_id = ch_latest.display_id
+                
+            # Twitchチャンネルアイコンが変更された時
+            #if ch_latest.icon != ch_old.icon:
+            #    self.logger.info(f'Update YouTube channel icon. {ch_old.icon} -> {ch_latest.icon}')
+            #    msg = await notice_ch.send(embed=embed_msg.ytch_notice_icon(ch_latest.id, ch_latest.name, ch_latest.icon, ch_old.icon))
+            #    await msg.publish()
+            #    ch_old.icon = ch_latest.icon
+            
+            # Twitchチャンネル概要が変更された時
+            #if ch_latest.description != ch_old.description:
+            #    self.logger.info(f'Update YouTube channel description.')
+            #    msg = await notice_ch.send(embed=embed_msg.ytch_notice_description(ch_latest.id, ch_latest.name, ch_latest.icon))
+            #    await msg.publish()
+            #    ch_old.description = ch_latest.description
+                
+            # Twitchチャンネル登録者数が更新された時
+            if ch_latest.subsc_count != ch_old.subsc_count:
+                self.logger.info(f'Update Twitch channel subscriber count. {ch_old.subsc_count} -> {ch_latest.subsc_count}')
+                if int(ch_latest.play_count/10000) > int(ch_old.play_count/10000):
+                    msg = await notice_ch.send(embed=embed_msg.tcch_notice_subsc(ch_latest.display_id, ch_latest.name, ch_latest.icon, ch_latest.subsc_count, ch_latest.updated_at))
+                    await msg.publish()
+                ch_old.subsc_count = ch_latest.subsc_count
+                
+            # Twitchチャンネル総再生回数が更新された時
+            if ch_latest.play_count != ch_old.play_count:
+                self.logger.info(f'Update Twitch channel total play count. {ch_old.play_count} -> {ch_latest.play_count}')
+                if ch_latest.play_count < 100000000:
+                    if int(ch_latest.play_count/100000) > int(ch_old.play_count/100000):
+                        msg = await notice_ch.send(embed=embed_msg.tcch_notice_play(ch_latest.display_id, ch_latest.name, ch_latest.icon, ch_latest.play_count, ch_latest.updated_at))
+                        await msg.publish()
+                else:
+                    #if int(ch_latest.play_count/20000000) > int(ch_old.play_count/20000000):
+                    #    msg = await notice_ch.send(embed=embed_msg.tcch_notice_play(ch_latest.id, ch_latest.name, ch_latest.icon, ch_latest.play_count, ch_latest.updated_at))
+                    #    await msg.publish()
+                    pass
+                ch_old.play_count = ch_latest.play_count
+                
+            db.commit()
 
     
     @ytch_notice.before_loop
     @ytvideo_notice.before_loop
+    @tcch_notice.before_loop
     async def wait_notification_tasks(self):
         await self.bot.wait_until_ready()
         self.logger.info('Notification tasks start waiting...')

@@ -1,6 +1,3 @@
-play_count = 0
+subsc = 235802
 
-if int(play_count/100000) > int(play_count/100000):
-    print(True)
-else:
-    print(False)
+print(f"{subsc/10000:.1f}万人")
