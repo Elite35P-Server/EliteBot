@@ -23,7 +23,17 @@
 	"settings": {},
 
 	// Add the IDs of extensions you want installed when the container is created.
-	"extensions": []
+	"extensions": [
+		"donjayamanne.githistory",
+		"knisterpeter.vscode-github",
+		"github.copilot",
+		"ms-python.python",
+		"njpwerner.autodocstring",
+		"kevinrose.vsc-python-indent",
+		"tabnine.tabnine-vscode",
+		"visualstudioexptteam.vscodeintellicode",
+		"davidanson.vscode-markdownlint"
+	]
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
