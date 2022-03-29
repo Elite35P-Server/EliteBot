@@ -398,22 +398,22 @@ class Notification(commands.Cog):
                             stream_old.description = stream_latest.description
                             
                         # Twitch配信ステータスが更新された時
-                        elif stream_latest.status != streams_old.status:
-                            self.logger.info(f'Update Twitch stream status. ID: {stream_latest.id}, Title: {stream_latest.title}, Status: {streams_old.status} -> {stream_latest.status}')
+                        elif stream_latest.status != stream_old.status:
+                            self.logger.info(f'Update Twitch stream status. ID: {stream_latest.id}, Title: {stream_latest.title}, Status: {stream_old.status} -> {stream_latest.status}')
                             if stream_old.status == 'live' and stream_latest.status == 'none':
                                 msg = await notice_ch.send(embed=embed_msg.tcstream_notice_livetonone(ch_latest.display_id, ch_latest.name, ch_latest.icon, stream_latest.title, stream_latest.url, stream_latest.thumbnail, stream_latest.as_time, stream_latest.ae_time))
                                 await msg.publish()
                             stream_old.status = stream_latest.status
                         
                         # Twitch配信同時接続数が更新された時
-                        elif stream_latest.current_viewers != streams_old.current_viewers:
-                            self.logger.info(f'Update Twitch stream current viewers. ID: {stream_latest.id}, Title: {stream_latest.title}, CurrentViewers: {streams_old.current_viewers} -> {stream_latest.current_viewers}')
-                            if stream_latest.status == 'live' and streams_old.current_viewers != None:
-                                    if int(stream_latest.current_viewers/10000) > int(streams_old.current_viewers/10000):
+                        elif stream_latest.current_viewers != stream_old.current_viewers:
+                            self.logger.info(f'Update Twitch stream current viewers. ID: {stream_latest.id}, Title: {stream_latest.title}, CurrentViewers: {stream_old.current_viewers} -> {stream_latest.current_viewers}')
+                            if stream_latest.status == 'live' and stream_old.current_viewers != None:
+                                    if int(stream_latest.current_viewers/10000) > int(stream_old.current_viewers/10000):
                                         trigger = int(stream_latest.current_viewers/10000)*10000
                                         msg = await notice_ch.send(embed=embed_msg.tcstream_notice_currentviewers(ch_latest.id, ch_latest.name, ch_latest.icon, stream_latest.title, stream_latest.url, stream_latest.thumbnail, trigger, stream_latest.current_viewers, stream_latest.updated_at))
                                         await msg.publish()
-                            streams_old.current_viewers = stream_latest.current_viewers
+                            stream_old.current_viewers = stream_latest.current_viewers
                             
                         # Twitch配信再生回数が更新された時
                         elif stream_latest.view_count != stream_old.view_count:
