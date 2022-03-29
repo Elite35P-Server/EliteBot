@@ -462,7 +462,7 @@ class Notification(commands.Cog):
                         db.commit()
                         break
                 
-                if stream_latest.id not in [stream.id for stream in stream_old]:
+                if stream_latest.id not in [stream.id for stream in streams_old]:
                     # Twitch配信または動画が作成された時
                     self.logger.info(f'New Twitch stream. ID: {stream_latest.id}, Title: {stream_latest.title}')
                     if stream_latest.status == 'live':
