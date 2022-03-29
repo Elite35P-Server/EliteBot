@@ -417,7 +417,7 @@ class Notification(commands.Cog):
                             
                         # Twitch配信再生回数が更新された時
                         elif stream_latest.view_count != stream_old.view_count:
-                            self.logger.info(f'Update Twitch stream play count. ID: {stream_latest.id}, Title: {stream_latest.title}, PlayCount: {stream_latest.view_count} -> {stream_latest.view_count}')
+                            self.logger.info(f'Update Twitch stream play count. ID: {stream_latest.id}, Title: {stream_latest.title}, PlayCount: {stream_old.view_count} -> {stream_latest.view_count}')
                             if stream_latest.view_count < 100000:
                                 if int(stream_latest.view_count/10000) > int(stream_old.view_count/10000):
                                     trigger = int(stream_latest.view_count/10000)*10000
