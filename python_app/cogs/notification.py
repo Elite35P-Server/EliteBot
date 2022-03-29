@@ -184,13 +184,13 @@ class Notification(commands.Cog):
                         # YouTube動画高評価数が更新された時
                         if video_latest.like_count != video_old.like_count:
                             self.logger.info(f'Update YouTube video like count. ID: {video_latest.id}, Title: {video_latest.title}, LikeCount: {video_old.like_count} -> {video_latest.like_count}')
-                            if int(video_latest.like_count/10000) < int(video_old.like_count/10000):
+                            if int(video_latest.like_count/10000) > int(video_old.like_count/10000):
                                 trigger = int(video_latest.like_count/10000)*10000
                                 if video_latest.status == 'live':
-                                    msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_like_live(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, trigger, video_latest.play_count, video_latest.updated_at))
+                                    msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_like_live(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, trigger, video_latest.like_count, video_latest.updated_at))
                                     await msg.publish()
                                 else:
-                                    msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_like_live(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, trigger, video_latest.play_count, video_latest.updated_at))
+                                    msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_like(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, trigger, video_latest.like_count, video_latest.updated_at))
                                     await msg.publish()
                             video_old.like_count = video_latest.like_count
 
