@@ -161,8 +161,8 @@ class Notification(commands.Cog):
                                         msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_play(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, trigger, video_latest.play_count, video_latest.updated_at))
                                         await msg.publish()
                             elif video_latest.play_count < 10000000:
-                                trigger = int(video_latest.play_count/500000)*500000
                                 if int(video_latest.play_count/500000) > int(video_old.play_count/500000):
+                                    trigger = int(video_latest.play_count/500000)*500000
                                     if video_latest.status == 'live':
                                         msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_play_live(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, trigger, video_latest.play_count, video_latest.updated_at))
                                         await msg.publish()
@@ -170,8 +170,8 @@ class Notification(commands.Cog):
                                         msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_play(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, trigger, video_latest.play_count, video_latest.updated_at))
                                         await msg.publish()
                             else:
-                                trigger = int(video_latest.play_count/1000000)*1000000
                                 if int(video_latest.play_count/1000000) > int(video_old.play_count/1000000):
+                                    trigger = int(video_latest.play_count/1000000)*1000000
                                     if video_latest.status == 'live':
                                         msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_play_live(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, trigger, video_latest.play_count, video_latest.updated_at))
                                         await msg.publish()
@@ -184,8 +184,8 @@ class Notification(commands.Cog):
                         # YouTube動画高評価数が更新された時
                         if video_latest.like_count != video_old.like_count:
                             self.logger.info(f'Update YouTube video like count. ID: {video_latest.id}, Title: {video_latest.title}, LikeCount: {video_old.like_count} -> {video_latest.like_count}')
-                            trigger = int(video_latest.like_count/10000)*10000
                             if int(video_latest.like_count/10000) < int(video_old.like_count/10000):
+                                trigger = int(video_latest.like_count/10000)*10000
                                 if video_latest.status == 'live':
                                     msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_like_live(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, trigger, video_latest.play_count, video_latest.updated_at))
                                     await msg.publish()
@@ -214,8 +214,8 @@ class Notification(commands.Cog):
                         if video_latest.current_viewers != video_old.current_viewers:
                             self.logger.info(f'Update YouTube stream current viewers. ID: {video_latest.id}, Title: {video_latest.title}, CurrentViewers: {video_old.current_viewers} -> {video_latest.current_viewers}')
                             if video_latest.status == 'live' and video_old.current_viewers != None:
-                                    trigger = int(video_latest.current_viewers/50000)*50000
                                     if int(video_latest.current_viewers/50000) > int(video_old.current_viewers/50000):
+                                        trigger = int(video_latest.current_viewers/50000)*50000
                                         msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_currentviewers(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, trigger, video_latest.current_viewers, video_latest.updated_at))
                                         await msg.publish()
                             video_old.current_viewers = video_latest.current_viewers
@@ -342,11 +342,116 @@ class Notification(commands.Cog):
                 ch_old.play_count = ch_latest.play_count
                 
             db.commit()
+    
+    # Twitch Stream Notice
+    @tasks.loop(seconds=5)
+    async def tcstream_notice(self):
+        notice_ch = self.bot.get_channel(self.notice_chid)
+        with SessionLocal() as db:
+            ch_latest = crud.get_tcch(db, self.youtube_id)
+            streams_latest = crud.get_tcstreams_date(db)
+            streams_old = crud.get_tcstreams_date_old(db)
+            
+            if streams_latest == []:
+                self.logger.error('Not found Twitch streams in DB.')
+                return
+            
+            
+            for stream_latest in streams_latest:
+                if streams_old == []:
+                    self.logger.warn(f'Not found Twitch stream in Old DB.')
+                    stream = schemas.TwitchStream(
+                        id=stream_latest.id,
+                        stream_id=stream_latest.stream_id,
+                        title=stream_latest.title,
+                        thumbnail=stream_latest.thumbnail,
+                        description=stream_latest.description,
+                        url=stream_latest.url,
+                        type=stream_latest.type,
+                        game_id=stream_latest.game_id,
+                        game_name=stream_latest.game_name,
+                        status=stream_latest.status,
+                        current_viewers=stream_latest.current_viewers,
+                        view_count=stream_latest.view_count,
+                        as_time=stream_latest.as_time,
+                        ae_time=stream_latest.ae_time,
+                        created_at=stream_latest.created_at,
+                        updated_at=stream_latest.updated_at,
+                    )
+                    crud.update_tcstream_old(db, self.twitch_id, stream)
+                    continue
+                
+                for stream_old in streams_old:
+                    if stream_latest.id == stream_old.id:
+                        # Twitch動画タイトルが変更された時
+                        if stream_latest.title != stream_old.title:
+                            self.logger.info(f'Update YouTube video title. ID: {stream_latest.id}, Title: {stream_old.title} -> {stream_latest.title}')
+                            msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_title(ch_latest.id, ch_latest.name, ch_latest.icon, stream_latest.url, stream_latest.thumbnail, stream_old.title, stream_latest.title))
+                            await msg.publish()
+                            stream_old.title = stream_latest.title
+                            
+                        # Twitch動画概要が変更された時
+                        if stream_latest.description != stream_old.description:
+                            self.logger.info(f'Update YouTube video description. ID: {stream_latest.id}, Title: {stream_latest.title}')
+                            stream_old.description = stream_latest.description
+                            
+                        # Twitch配信ステータスが更新された時
+                        if stream_latest.status != streams_old.status:
+                            self.logger.info(f'Update Twitch stream status. ID: {stream_latest.id}, Title: {stream_latest.title}, Status: {streams_old.status} -> {stream_latest.status}')
+                            if stream_old.status == 'live' and stream_latest.status == 'none':
+                                msg = await notice_ch.send(embed=embed_msg.tcstream_notice_livetonone(ch_latest.display_id, ch_latest.name, ch_latest.icon, stream_latest.title, stream_latest.url, stream_latest.thumbnail, stream_latest.as_time, stream_latest.ae_time))
+                                await msg.publish()
+                            stream_old.status = stream_latest.status
+                        
+                        # YouTube配信同時接続数が更新された時
+                        if stream_latest.current_viewers != streams_old.current_viewers:
+                            self.logger.info(f'Update YouTube stream current viewers. ID: {stream_latest.id}, Title: {stream_latest.title}, CurrentViewers: {streams_old.current_viewers} -> {stream_latest.current_viewers}')
+                            if stream_latest.status == 'live' and streams_old.current_viewers != None:
+                                    if int(stream_latest.current_viewers/50000) > int(streams_old.current_viewers/50000):
+                                        trigger = int(stream_latest.current_viewers/50000)*50000
+                                        msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_currentviewers(ch_latest.id, ch_latest.name, ch_latest.icon, stream_latest.title, stream_latest.url, stream_latest.thumbnail, trigger, stream_latest.current_viewers, stream_latest.updated_at))
+                                        await msg.publish()
+                            streams_old.current_viewers = stream_latest.current_viewers
+                        
+                        
+                        db.commit()
+                        break
+                
+                if stream_latest.id not in [stream.id for stream in stream_old]:
+                    # Twitch配信または動画が作成された時
+                    self.logger.info(f'New Twitch stream. ID: {stream_latest.id}, Title: {stream_latest.title}')
+                    if stream_latest.status == 'live':
+                        msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_nonetolive(ch_latest.id, ch_latest.name, ch_latest.icon, stream_latest.title, stream_latest.url, stream_latest.thumbnail, stream_latest.as_time))
+                        await msg.publish()
+                    elif stream_latest.status == 'none' and stream_latest.type != 'live':
+                        msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_upload(ch_latest.id, ch_latest.name, ch_latest.icon, stream_latest.title, stream_latest.url, stream_latest.thumbnail, stream_latest.created_at))
+                        await msg.publish()
+                    
+                    stream = schemas.TwitchStream(
+                        id=stream_latest.id,
+                        stream_id=stream_latest.stream_id,
+                        title=stream_latest.title,
+                        thumbnail=stream_latest.thumbnail,
+                        description=stream_latest.description,
+                        url=stream_latest.url,
+                        type=stream_latest.type,
+                        game_id=stream_latest.game_id,
+                        game_name=stream_latest.game_name,
+                        status=stream_latest.status,
+                        current_viewers=stream_latest.current_viewers,
+                        view_count=stream_latest.view_count,
+                        as_time=stream_latest.as_time,
+                        ae_time=stream_latest.ae_time,
+                        created_at=stream_latest.created_at,
+                        updated_at=stream_latest.updated_at,
+                    )
+                    crud.update_tcstream_old(db, self.twitch_id, stream)
 
     
     @ytch_notice.before_loop
     @ytvideo_notice.before_loop
     @tcch_notice.before_loop
+    @tcstream_notice.before_loop
     async def wait_notification_tasks(self):
         await self.bot.wait_until_ready()
         self.logger.info('Notification tasks start waiting...')
