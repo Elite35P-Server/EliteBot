@@ -69,14 +69,14 @@ class Notification(commands.Cog):
             #    ch_old.description = ch_latest.description
                 
             # YouTubeチャンネル登録者数が更新された時
-            elif ch_latest.subsc_count != ch_old.subsc_count:
+            elif ch_latest.subsc_count > ch_old.subsc_count:
                 self.logger.info(f'Update YouTube channel subscriber count. {ch_old.subsc_count} -> {ch_latest.subsc_count}')
                 msg = await notice_ch.send(embed=embed_msg.ytch_notice_subsc(ch_latest.id, ch_latest.name, ch_latest.icon, ch_latest.subsc_count, ch_latest.updated_at))
                 await msg.publish()
                 ch_old.subsc_count = ch_latest.subsc_count
                 
             # YouTubeチャンネル総再生回数が更新された時
-            elif ch_latest.play_count != ch_old.play_count:
+            elif ch_latest.play_count > ch_old.play_count:
                 self.logger.info(f'Update YouTube channel total play count. {ch_old.play_count} -> {ch_latest.play_count}')
                 if ch_latest.play_count < 200000000:
                     if int(ch_latest.play_count/10000000) > int(ch_old.play_count/10000000):
@@ -151,7 +151,7 @@ class Notification(commands.Cog):
                             video_old.description = video_latest.description
                             
                         # YouTube動画再生回数が更新された時
-                        elif video_latest.play_count != video_old.play_count:
+                        elif video_latest.play_count > video_old.play_count:
                             self.logger.info(f'Update YouTube video play count. ID: {video_latest.id}, Title: {video_latest.title}, PlayCount: {video_old.play_count} -> {video_latest.play_count}')
                             if video_latest.play_count < 1000000:
                                 if int(video_latest.play_count/100000) > int(video_old.play_count/100000):
@@ -184,7 +184,7 @@ class Notification(commands.Cog):
                             video_old.play_count = video_latest.play_count
                         
                         # YouTube動画高評価数が更新された時
-                        elif video_latest.like_count != video_old.like_count:
+                        elif video_latest.like_count > video_old.like_count:
                             self.logger.info(f'Update YouTube video like count. ID: {video_latest.id}, Title: {video_latest.title}, LikeCount: {video_old.like_count} -> {video_latest.like_count}')
                             if int(video_latest.like_count/10000) > int(video_old.like_count/10000):
                                 trigger = int(video_latest.like_count/10000)*10000
@@ -321,8 +321,8 @@ class Notification(commands.Cog):
             #    await msg.publish()
             #    ch_old.description = ch_latest.description
                 
-            # Twitchチャンネル登録者数が更新された時
-            elif ch_latest.subsc_count != ch_old.subsc_count:
+            # Twitchチャンネルフォロワー数が更新された時
+            elif ch_latest.subsc_count > ch_old.subsc_count:
                 self.logger.info(f'Update Twitch channel subscriber count. {ch_old.subsc_count} -> {ch_latest.subsc_count}')
                 if int(ch_latest.play_count/10000) > int(ch_old.play_count/10000):
                     msg = await notice_ch.send(embed=embed_msg.tcch_notice_subsc(ch_latest.display_id, ch_latest.name, ch_latest.icon, ch_latest.subsc_count, ch_latest.updated_at))
@@ -330,7 +330,7 @@ class Notification(commands.Cog):
                 ch_old.subsc_count = ch_latest.subsc_count
                 
             # Twitchチャンネル総再生回数が更新された時
-            elif ch_latest.play_count != ch_old.play_count:
+            elif ch_latest.play_count > ch_old.play_count:
                 self.logger.info(f'Update Twitch channel total play count. {ch_old.play_count} -> {ch_latest.play_count}')
                 if ch_latest.play_count < 100000000:
                     if int(ch_latest.play_count/100000) > int(ch_old.play_count/100000):
@@ -416,7 +416,7 @@ class Notification(commands.Cog):
                             stream_old.current_viewers = stream_latest.current_viewers
                             
                         # Twitch配信再生回数が更新された時
-                        elif stream_latest.view_count != stream_old.view_count:
+                        elif stream_latest.view_count > stream_old.view_count:
                             self.logger.info(f'Update Twitch stream play count. ID: {stream_latest.id}, Title: {stream_latest.title}, PlayCount: {stream_old.view_count} -> {stream_latest.view_count}')
                             if stream_latest.view_count < 100000:
                                 if int(stream_latest.view_count/10000) > int(stream_old.view_count/10000):
