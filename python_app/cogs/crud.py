@@ -14,6 +14,9 @@ def get_ytch_old(db: Session, id: str):
 def get_twac(db: Session, id: str):
     return db.query(models.TwitterAccountLatest).filter(models.TwitterAccountLatest.id == id).first()
 
+def get_twac_old(db: Session, id: str):
+    return db.query(models.TwitterAccountOld).filter(models.TwitterAccountOld.id == id).first()
+
 def get_tcch(db: Session, id: str):
     return db.query(models.TwitchChannelLatest).filter(models.TwitchChannelLatest.id == id).first()
 
