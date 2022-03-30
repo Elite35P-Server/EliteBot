@@ -346,7 +346,7 @@ class Notification(commands.Cog):
     async def tcstream_notice(self):
         notice_ch = self.bot.get_channel(self.notice_chid)
         with SessionLocal() as db:
-            ch_latest = crud.get_tcch(db, self.youtube_id)
+            ch_latest = crud.get_tcch(db, self.twitch_id)
             streams_latest = crud.get_tcstreams_date(db)
             streams_old = crud.get_tcstreams_date_old(db)
             
@@ -498,7 +498,7 @@ class Notification(commands.Cog):
                 return
             if not twac_old:
                 self.logger.warn('Not found Twitter account in Old DB.')
-                crud.update_ytch_old(db, twac_latest)
+                crud.update_twac_old(db, twac_latest)
                 return
             
             # Twitterアカウント名が変更された時
@@ -529,6 +529,12 @@ class Notification(commands.Cog):
             # Twitterアカウントツイート数が更新された時
             elif twac_latest.tweet_count > twac_old.tweet_count:
                 self.logger.info(f'Update Twitter account tweet_count. TweetCount: {twac_old.tweet_count} -> {twac_latest.tweet_count}')
+                if twac_latest.tweet_count < 100000:
+                    pass
+                elif twac_latest.tweet_count < 1000000:
+                    pass
+                else:
+                    pass
                 twac_old.tweet_count = twac_latest.tweet_count
                 
             db.commit()
