@@ -197,6 +197,38 @@ def update_twac(db: Session, tw: schemas.Twitter):
 
     return tw_db.updated_at
 
+def update_twac_old(db: Session, tw: schemas.Twitter):
+    tw_db = get_twac_old(db, id=tw.id)
+    if tw_db:
+        if tw_db.display_id!=tw.display_id or tw_db.name!=tw.name or tw_db.icon!=tw.icon or tw_db.description!=tw.description or tw_db.followers_count!=tw.followers_count or tw_db.following_count!=tw.following_count or tw_db.status!=tw.status or tw_db.tweet_count!=tw.tweet_count:
+            tw.display_id = tw.display_id
+            tw_db.name = tw.name
+            tw_db.icon = tw.icon
+            tw_db.description = tw.description
+            tw_db.followers_count = tw.followers_count
+            tw_db.following_count = tw.following_count
+            tw_db.tweet_count = tw.tweet_count
+            tw_db.status = tw.status
+            tw_db.updated_at = tw.updated_at
+            db.commit()
+            
+    else:
+        tw_db = models.TwitterAccountOld(id=tw.id,
+                                      display_id=tw.display_id,
+                                      name=tw.name,
+                                      icon=tw.icon,
+                                      description=tw.description,
+                                      followers_count=tw.followers_count,
+                                      following_count=tw.following_count,
+                                      tweet_count=tw.tweet_count,
+                                      status=tw.status,
+                                      updated_at=tw.updated_at)
+        db.add(tw_db)
+        db.commit()
+        db.refresh(tw_db)
+
+    return tw_db.updated_at
+
 def create_twte(db: Session, te: schemas.TwitterTweet):
     te_db = models.TwitterTweetLatest(
         id=te.id,
