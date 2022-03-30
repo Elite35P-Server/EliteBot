@@ -23,12 +23,14 @@ class Notification(commands.Cog):
         self.ytvideo_notice.start()
         self.tcch_notice.start()
         self.tcstream_notice.start()
+        self.twac_notice.start()
     
     def cog_unload(self):
         self.ytch_notice.cancel()
         self.ytvideo_notice.cancel()
         self.tcch_notice.cancel()
         self.tcstream_notice.cancel()
+        self.twac_notice.cancel()
 
 
     # YouTube Channel Notice
@@ -212,13 +214,19 @@ class Notification(commands.Cog):
                             
                         # YouTube配信同時接続数が更新された時
                         elif video_latest.current_viewers != video_old.current_viewers:
-                            self.logger.info(f'Update YouTube stream current viewers. ID: {video_latest.id}, Title: {video_latest.title}, CurrentViewers: {video_old.current_viewers} -> {video_latest.current_viewers}')
-                            if video_latest.status == 'live' and video_old.current_viewers != None:
-                                    if int(video_latest.current_viewers/50000) > int(video_old.current_viewers/50000):
-                                        trigger = int(video_latest.current_viewers/50000)*50000
-                                        msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_currentviewers(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, trigger, video_latest.current_viewers, video_latest.updated_at))
-                                        await msg.publish()
-                            video_old.current_viewers = video_latest.current_viewers
+                            if video_old.current_viewers == None:
+                                self.logger.info(f'Update YouTube stream current viewers. ID: {video_latest.id}, Title: {video_latest.title}, CurrentViewers: {video_old.current_viewers} -> {video_latest.current_viewers}')
+                                video_old.current_viewers = video_latest.current_viewers
+                            elif video_latest.current_viewers == None:
+                                self.logger.info(f'Update YouTube stream current viewers. ID: {video_latest.id}, Title: {video_latest.title}, MaxCurrentViewers: {video_old.current_viewers}')
+                                video_old.current_viewers = video_latest.current_viewers
+                            elif video_latest.status == 'live' and video_latest.current_viewers > video_old.current_viewers:
+                                self.logger.info(f'Update YouTube stream max current viewers. ID: {video_latest.id}, Title: {video_latest.title}, MaxCurrentViewers: {video_old.current_viewers} -> {video_latest.current_viewers}')
+                                if int(video_latest.current_viewers/25000) > int(video_old.current_viewers/25000):
+                                    trigger = int(video_latest.current_viewers/25000)*25000
+                                    msg = await notice_ch.send(embed=embed_msg.ytvideo_notice_currentviewers(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, trigger, video_latest.current_viewers, video_latest.updated_at))
+                                    await msg.publish()
+                                video_old.current_viewers = video_latest.current_viewers
                             
                         # YouTube動画配信開始予定時刻が更新された時
                         elif video_latest.ss_time != video_old.ss_time:
@@ -384,7 +392,7 @@ class Notification(commands.Cog):
                         # Twitch動画タイトルが変更された時
                         if stream_latest.title != stream_old.title:
                             self.logger.info(f'Update Twitch stream title. ID: {stream_latest.id}, Title: {stream_old.title} -> {stream_latest.title}')
-                            msg = await notice_ch.send(embed=embed_msg.tcstream_notice_title(ch_latest.id, ch_latest.name, ch_latest.icon, stream_latest.url, stream_latest.thumbnail, stream_old.title, stream_latest.title))
+                            msg = await notice_ch.send(embed=embed_msg.tcstream_notice_title(ch_latest.display_id, ch_latest.name, ch_latest.icon, stream_latest.url, stream_latest.thumbnail, stream_old.title, stream_latest.title))
                             await msg.publish()
                             stream_old.title = stream_latest.title
                             
@@ -403,13 +411,19 @@ class Notification(commands.Cog):
                         
                         # Twitch配信同時接続数が更新された時
                         elif stream_latest.current_viewers != stream_old.current_viewers:
-                            self.logger.info(f'Update Twitch stream current viewers. ID: {stream_latest.id}, Title: {stream_latest.title}, CurrentViewers: {stream_old.current_viewers} -> {stream_latest.current_viewers}')
-                            if stream_latest.status == 'live' and stream_old.current_viewers != None:
-                                    if int(stream_latest.current_viewers/10000) > int(stream_old.current_viewers/10000):
-                                        trigger = int(stream_latest.current_viewers/10000)*10000
-                                        msg = await notice_ch.send(embed=embed_msg.tcstream_notice_currentviewers(ch_latest.id, ch_latest.name, ch_latest.icon, stream_latest.title, stream_latest.url, stream_latest.thumbnail, trigger, stream_latest.current_viewers, stream_latest.updated_at))
-                                        await msg.publish()
-                            stream_old.current_viewers = stream_latest.current_viewers
+                            if stream_old.current_viewers == None:
+                                self.logger.info(f'Update Twitch stream current viewers. ID: {stream_latest.id}, Title: {stream_latest.title}, CurrentViewers: {stream_latest.current_viewers}')
+                                stream_old.current_viewers = stream_latest.current_viewers
+                            elif stream_latest.current_viewers == None:
+                                self.logger.info(f'Update Twitch stream current viewers. ID: {stream_latest.id}, Title: {stream_latest.title}, MaxCurrentViewers: {stream_latest.current_viewers}')
+                                stream_old.current_viewers = stream_latest.current_viewers
+                            elif stream_latest.status == 'live' and stream_latest.current_viewers > stream_old.current_viewers:
+                                self.logger.info(f'Update Twitch stream max current viewers. ID: {stream_latest.id}, Title: {stream_latest.title}, MaxCurrentViewers: {stream_old.current_viewers} -> {stream_latest.current_viewers}')
+                                if int(stream_latest.current_viewers/10000) > int(stream_old.current_viewers/10000):
+                                    trigger = int(stream_latest.current_viewers/10000)*10000
+                                    msg = await notice_ch.send(embed=embed_msg.tcstream_notice_currentviewers(ch_latest.display_id, ch_latest.name, ch_latest.icon, stream_latest.title, stream_latest.url, stream_latest.thumbnail, trigger, stream_latest.current_viewers, stream_latest.updated_at))
+                                    await msg.publish()
+                                stream_old.current_viewers = stream_latest.current_viewers
                             
                         # Twitch配信再生回数が更新された時
                         elif stream_latest.view_count > stream_old.view_count:
@@ -418,25 +432,25 @@ class Notification(commands.Cog):
                                 if int(stream_latest.view_count/10000) > int(stream_old.view_count/10000):
                                     trigger = int(stream_latest.view_count/10000)*10000
                                     if stream_latest.status == 'live':
-                                        msg = await notice_ch.send(embed=embed_msg.tcstream_notice_play_live(ch_latest.id, ch_latest.name, ch_latest.icon, stream_latest.title, stream_latest.url, stream_latest.id, trigger, stream_latest.view_count, stream_latest.updated_at))
+                                        msg = await notice_ch.send(embed=embed_msg.tcstream_notice_play_live(ch_latest.display_id, ch_latest.name, ch_latest.icon, stream_latest.title, stream_latest.url, stream_latest.thumbnail, trigger, stream_latest.current_viewers, stream_latest.updated_at))
                                     else:
-                                        msg = await notice_ch.send(embed=embed_msg.tcstream_notice_play(ch_latest.id, ch_latest.name, ch_latest.icon, stream_latest.title, stream_latest.url, stream_latest.id, trigger, stream_latest.view_count, stream_latest.updated_at))
+                                        msg = await notice_ch.send(embed=embed_msg.tcstream_notice_play(ch_latest.display_id, ch_latest.name, ch_latest.icon, stream_latest.title, stream_latest.url, stream_latest.thumbnail, trigger, stream_latest.current_viewers, stream_latest.updated_at))
                                     await msg.publish()
                             elif stream_latest.view_count < 1000000:
                                 if int(stream_latest.view_count/50000) > int(stream_latest.view_count/500000):
                                     trigger = int(stream_latest.view_count/50000)*50000
                                     if stream_latest.status == 'live':
-                                        msg = await notice_ch.send(embed=embed_msg.tcstream_notice_play_live(ch_latest.id, ch_latest.name, ch_latest.icon, stream_latest.title, stream_latest.url, stream_latest.id, trigger, stream_latest.view_count, stream_latest.updated_at))
+                                        msg = await notice_ch.send(embed=embed_msg.tcstream_notice_play_live(ch_latest.display_id, ch_latest.name, ch_latest.icon, stream_latest.title, stream_latest.url, stream_latest.thumbnail, trigger, stream_latest.current_viewers, stream_latest.updated_at))
                                     else:
-                                        msg = await notice_ch.send(embed=embed_msg.tcstream_notice_play(ch_latest.id, ch_latest.name, ch_latest.icon, stream_latest.title, stream_latest.url, stream_latest.id, trigger, stream_latest.view_count, stream_latest.updated_at))
+                                        msg = await notice_ch.send(embed=embed_msg.tcstream_notice_play(ch_latest.display_id, ch_latest.name, ch_latest.icon, stream_latest.title, stream_latest.url, stream_latest.thumbnail, trigger, stream_latest.current_viewers, stream_latest.updated_at))
                                     await msg.publish()
                             else:
                                 if int(stream_latest.view_count/1000000) > int(stream_latest.view_count/1000000):
                                     trigger = int(stream_latest.view_count/1000000)*1000000
                                     if stream_latest.status == 'live':
-                                        msg = await notice_ch.send(embed=embed_msg.tcstream_notice_play_live(ch_latest.id, ch_latest.name, ch_latest.icon, stream_latest.title, stream_latest.url, stream_latest.id, trigger, stream_latest.view_count, stream_latest.updated_at))
+                                        msg = await notice_ch.send(embed=embed_msg.tcstream_notice_play_live(ch_latest.display_id, ch_latest.name, ch_latest.icon, stream_latest.title, stream_latest.url, stream_latest.thumbnail, trigger, stream_latest.current_viewers, stream_latest.updated_at))
                                     else:
-                                        msg = await notice_ch.send(embed=embed_msg.tcstream_notice_play(ch_latest.id, ch_latest.name, ch_latest.icon, stream_latest.title, stream_latest.url, stream_latest.id, trigger, stream_latest.view_count, stream_latest.updated_at))
+                                        msg = await notice_ch.send(embed=embed_msg.tcstream_notice_play(ch_latest.display_id, ch_latest.name, ch_latest.icon, stream_latest.title, stream_latest.url, stream_latest.thumbnail, trigger, stream_latest.current_viewers, stream_latest.updated_at))
                                     await msg.publish()
                             
                             stream_old.view_count = stream_latest.view_count
@@ -459,10 +473,10 @@ class Notification(commands.Cog):
                     # Twitch配信または動画が作成された時
                     self.logger.info(f'New Twitch stream. ID: {stream_latest.id}, Title: {stream_latest.title}')
                     if stream_latest.status == 'live':
-                        msg = await notice_ch.send(content=self.notice_role, embed=embed_msg.ytvideo_notice_nonetolive(ch_latest.id, ch_latest.name, ch_latest.icon, stream_latest.title, stream_latest.url, stream_latest.thumbnail, stream_latest.as_time))
+                        msg = await notice_ch.send(content=self.notice_role, embed=embed_msg.tcstream_notice_nonetolive(ch_latest.display_id, ch_latest.name, ch_latest.icon, stream_latest.title, stream_latest.url, stream_latest.thumbnail, stream_latest.as_time))
                         await msg.publish()
-                    elif stream_latest.status == 'none' and stream_latest.type != 'archive':
-                        msg = await notice_ch.send(content=self.notice_role, embed=embed_msg.ytvideo_notice_upload(ch_latest.id, ch_latest.name, ch_latest.icon, stream_latest.title, stream_latest.url, stream_latest.thumbnail, stream_latest.created_at))
+                    elif stream_latest.type != 'archive':
+                        msg = await notice_ch.send(content=self.notice_role, embed=embed_msg.tcstream_notice_upload(ch_latest.display_id, ch_latest.name, ch_latest.icon, stream_latest.title, stream_latest.url, stream_latest.thumbnail, stream_latest.created_at))
                         await msg.publish()
                     
                     stream = schemas.TwitchStream(
@@ -519,8 +533,9 @@ class Notification(commands.Cog):
             # Twitterアカウントフォロワー数が更新された時
             elif twac_latest.followers_count > twac_old.followers_count:
                 self.logger.info(f'Update Twitter account followers_count. FollowersCount: {twac_old.followers_count} -> {twac_latest.followers_count}')
-                if twac_latest.followers_count < 1000000:
-                    pass
+                if int(twac_latest.followers_count/10000) > int(twac_old.followers_count/10000):
+                    msg = await notice_ch.send(embed=embed_msg.twac_notice_subsc(twac_latest.display_id, twac_latest.name, twac_latest.icon, twac_latest.followers_count, twac_latest.updated_at))
+                    await msg.publish()
                 twac_old.followers_count = twac_latest.followers_count
             
             # Twitterアカウントフォロー数が更新された時
@@ -531,12 +546,9 @@ class Notification(commands.Cog):
             # Twitterアカウントツイート数が更新された時
             elif twac_latest.tweet_count > twac_old.tweet_count:
                 self.logger.info(f'Update Twitter account tweet_count. TweetCount: {twac_old.tweet_count} -> {twac_latest.tweet_count}')
-                if twac_latest.tweet_count < 100000:
-                    pass
-                elif twac_latest.tweet_count < 1000000:
-                    pass
-                else:
-                    pass
+                if int(twac_latest.tweet_count/5000) > int(twac_old.tweet_count/5000):
+                    msg = await notice_ch.send(embed=embed_msg.twac_notice_tweet(twac_latest.display_id, twac_latest.name, twac_latest.icon, twac_latest.tweet_count, twac_latest.updated_at))
+                    await msg.publish()
                 twac_old.tweet_count = twac_latest.tweet_count
                 
             db.commit()

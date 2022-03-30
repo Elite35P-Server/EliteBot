@@ -260,3 +260,10 @@ def twac_notice_subsc(display_id: str, name: str, icon: str, subsc: int, updated
     embed.add_field(name="現在のフォロワー数", value=f"**{subsc:,}人**", inline=True)
     embed.set_footer(text="EliteBot v2", icon_url="https://media.discordapp.net/attachments/788107610943520861/939782491303211018/IMG_6360.png")
     return embed
+
+def twac_notice_tweet(display_id: str, name: str, icon: str, tweet: int, updated_at: DateTime):
+    embed=discord.Embed(title=f"{name}(@{display_id})", url=f"https://twitter.com/{display_id}", description=f"**Twitterアカウントのツイート数が{tweet/10000:.1f}万人を突破しました!**", color=0x00a1d8, timestamp=dt.utcnow())
+    embed.set_image(url=icon)
+    embed.add_field(name="達成日時", value=f"**<t:{int(updated_at.timestamp())}:F>(<t:{int(updated_at.timestamp())}:R>)**", inline=True)
+    embed.set_footer(text="EliteBot v2", icon_url="https://media.discordapp.net/attachments/788107610943520861/939782491303211018/IMG_6360.png")
+    return embed
