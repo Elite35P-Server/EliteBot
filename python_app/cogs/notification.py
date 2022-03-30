@@ -519,6 +519,8 @@ class Notification(commands.Cog):
             # Twitterアカウントフォロワー数が更新された時
             elif twac_latest.followers_count > twac_old.followers_count:
                 self.logger.info(f'Update Twitter account followers_count. FollowersCount: {twac_old.followers_count} -> {twac_latest.followers_count}')
+                if twac_latest.followers_count < 1000000:
+                    pass
                 twac_old.followers_count = twac_latest.followers_count
             
             # Twitterアカウントフォロー数が更新された時
