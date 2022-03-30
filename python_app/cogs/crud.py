@@ -63,11 +63,17 @@ def get_ytvideos_status(db: Session, status: str):
 def get_twspace(db: Session, id: str):
     return db.query(models.TwitterSpaceLatest).filter(models.TwitterSpaceLatest.id == id).first()
 
+def get_twspace_old(db: Session, id: str):
+    return db.query(models.TwitterSpaceOld).filter(models.TwitterSpaceOld.id == id).first()
+
 def get_twspaces(db: Session, skip: int = 0, limit: int = 5):
     return db.query(models.TwitterSpaceLatest).offset(skip).limit(limit).all()
 
-def get_twspaces_date(db: Session, skip: int = 0, limit: int = 5):
-    return db.query(models.TwitterSpaceLatest).order_by(desc(models.TwitterSpaceLatest.created_at)).offset(skip).limit(limit).all()
+def get_twspaces_date(db: Session):
+    return db.query(models.TwitterSpaceLatest).order_by(desc(models.TwitterSpaceLatest.created_at)).all()
+
+def get_twspaces_date_old(db: Session):
+    return db.query(models.TwitterSpaceOld).order_by(desc(models.TwitterSpaceOld.created_at)).all()
 
 def get_twspaces_sstime(db: Session, skip: int = 0, limit: int = 5):
     return db.query(models.TwitterSpaceLatest).order_by(desc(models.TwitterSpaceLatest.ss_time)).offset(skip).limit(limit).all()
@@ -406,6 +412,40 @@ def update_ytvideo_old(db: Session, ch_id: str, video: schemas.YouTubeVideo):
 
 def update_twspace(db: Session, tw_id: str, space: schemas.TwitterSpace):
     space_db = get_twspace(db, id=space.id)
+    if space_db:
+        if space_db.title!=space.title or space_db.audience_count!=space.audience_count or space_db.status!=space.status or space_db.ss_time!=space.ss_time or space_db.as_time!=space.as_time or space_db.ae_time!=space.ae_time:
+            space_db.title = space.title
+            space_db.url = space.url
+            space_db.status = space.status
+            space_db.audience_count = space.audience_count
+            space_db.ss_time = space.ss_time
+            space_db.as_time = space.as_time
+            space_db.ae_time = space.ae_time
+            space_db.updated_at = space.updated_at
+            db.commit()
+            
+    else:
+        space_db = models.TwitterSpaceLatest(
+            tw_id=tw_id,
+            id=space.id,
+            title=space.title,
+            url=space.url,
+            status=space.status,
+            audience_count=space.audience_count,
+            ss_time=space.ss_time,
+            as_time=space.as_time,
+            ae_time=space.ae_time,
+            created_at=space.created_at,
+            updated_at=space.updated_at
+        )
+        db.add(space_db)
+        db.commit()
+        db.refresh(space_db)
+
+    return space_db.updated_at
+
+def update_twspace_old(db: Session, tw_id: str, space: schemas.TwitterSpace):
+    space_db = get_twspace_old(db, id=space.id)
     if space_db:
         if space_db.title!=space.title or space_db.audience_count!=space.audience_count or space_db.status!=space.status or space_db.ss_time!=space.ss_time or space_db.as_time!=space.as_time or space_db.ae_time!=space.ae_time:
             space_db.title = space.title

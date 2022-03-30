@@ -518,11 +518,15 @@ class Notification(commands.Cog):
             # Twitterアカウント名が変更された時
             if twac_latest.name != twac_old.name:
                 self.logger.info(f'Update Twitter account name. Name: {twac_old.name} -> {twac_latest.name}')
+                msg = await notice_ch.send(embed=embed_msg.twac_notice_name(twac_latest.display_id, twac_old.name, twac_latest.name, twac_latest.icon))
+                await msg.publish()
                 twac_old.name = twac_latest.name
             
             # Twitterアカウント表示IDが変更された時
             elif twac_latest.display_id != twac_old.display_id:
                 self.logger.info(f'Update Twitter account display_id. ID: {twac_old.display_id} -> {twac_latest.display_id}')
+                msg = await notice_ch.send(content=self.notice_role, embed=embed_msg.twac_notice_displayid(twac_latest.name, twac_old.display_id, twac_latest.display_id, twac_latest.icon))
+                await msg.publish()
                 twac_old.display_name = twac_latest.display_name
                 
             # Twitterアカウント説明が変更された時
