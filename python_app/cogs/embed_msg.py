@@ -243,3 +243,20 @@ def tcstream_notice_play_live(display_id: str, name: str, icon: str, title: str,
     embed.add_field(name="現在の再生回数", value=f"**{view_count:,}回**", inline=True)
     embed.set_footer(text="EliteBot v2", icon_url="https://media.discordapp.net/attachments/788107610943520861/939782491303211018/IMG_6360.png")
     return embed
+
+# Twitter account
+def twac_notice_displayid(name: str, old_displayid: str, new_displayid: str, icon: str):
+    embed=discord.Embed(f"{name}({new_displayid})", url=f"https://www.twitch.tv/{new_displayid}", description="**Twitchのチャンネル表示IDが変更されました**", color=0x864ffe, timestamp=dt.utcnow())
+    embed.set_image(url=icon)
+    embed.add_field(name="変更前", value=f"**{old_displayid}**", inline=True)
+    embed.add_field(name="変更後", value=f"**{new_displayid}**", inline=True)
+    embed.set_footer(text="EliteBot v2", icon_url="https://media.discordapp.net/attachments/788107610943520861/939782491303211018/IMG_6360.png")
+    return embed
+
+def twac_notice_subsc(display_id: str, name: str, icon: str, subsc: int, updated_at: DateTime):
+    embed=discord.Embed(title=f"{name}({display_id})", url=f"https://www.twitch.tv/{display_id}", description=f"**Twitchのチャンネルフォロワー数が{subsc/10000:.0f}万人を突破しました!**", color=0x864ffe, timestamp=dt.utcnow())
+    embed.set_image(url=icon)
+    embed.add_field(name="達成日時", value=f"**<t:{int(updated_at.timestamp())}:F>(<t:{int(updated_at.timestamp())}:R>)**", inline=True)
+    embed.add_field(name="現在のフォロワー数", value=f"**{subsc:,}人**", inline=True)
+    embed.set_footer(text="EliteBot v2", icon_url="https://media.discordapp.net/attachments/788107610943520861/939782491303211018/IMG_6360.png")
+    return embed
