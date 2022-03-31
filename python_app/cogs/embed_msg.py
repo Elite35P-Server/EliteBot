@@ -201,8 +201,8 @@ def tcstream_notice_nonetolive(display_id: str, name: str, icon: str, title: str
     return embed
 
 def tcstream_notice_livetonone(display_id: str, name: str, icon: str, title: str, url: str, thumbnail: str, astime: DateTime, aetime: DateTime):
-    embed=discord.Embed(title=f"{name}({display_id})", url=url, description="**配信が終了しました**", color=0x864ffe, timestamp=dt.utcnow())
-    embed.set_author(name=name, url=f"https://www.twitch.tv/{display_id}", icon_url=icon)
+    embed=discord.Embed(title=title, url=url, description="**配信が終了しました**", color=0x864ffe, timestamp=dt.utcnow())
+    embed.set_author(name=f"{name}({display_id})", url=f"https://www.twitch.tv/{display_id}", icon_url=icon)
     embed.set_image(url=thumbnail)
     embed.add_field(name="開始日時", value=f"**<t:{int(astime.timestamp())}:F>(<t:{int(astime.timestamp())}:R>)**", inline=True)
     embed.add_field(name="終了日時", value=f"**<t:{int(aetime.timestamp())}:F>(<t:{int(aetime.timestamp())}:R>)**", inline=True)
@@ -210,16 +210,16 @@ def tcstream_notice_livetonone(display_id: str, name: str, icon: str, title: str
     return embed
 
 def tcstream_notice_upload(display_id: str, name: str, icon: str, title: str, url: str, thumbnail: str, createdat: DateTime):
-    embed=discord.Embed(title=f"{name}({display_id})", url=url, description="**動画が投稿されました!**", color=0x864ffe, timestamp=dt.utcnow())
-    embed.set_author(name=name, url=f"https://www.twitch.tv/{display_id}", icon_url=icon)
+    embed=discord.Embed(title=title, url=url, description="**動画が投稿されました!**", color=0x864ffe, timestamp=dt.utcnow())
+    embed.set_author(name=f"{name}({display_id})", url=f"https://www.twitch.tv/{display_id}", icon_url=icon)
     embed.set_image(url=thumbnail)
     embed.add_field(name="投稿日時", value=f"**<t:{int(createdat.timestamp())}:F>(<t:{int(createdat.timestamp())}:R>)**", inline=True)
     embed.set_footer(text="EliteBot v2", icon_url="https://media.discordapp.net/attachments/788107610943520861/939782491303211018/IMG_6360.png")
     return embed
 
 def tcstream_notice_currentviewers(display_id: str, name: str, icon: str, title: str, url: str, thumbnail: str, trigger: int, current_viewers: int, updated_at: DateTime):
-    embed=discord.Embed(title=f"{name}({display_id})", url=url, description=f"**現在行われている配信の同時接続数(視聴者数)が{trigger/10000}万人を突破しました!**", color=0x864ffe, timestamp=dt.utcnow())
-    embed.set_author(name=name, url=f"https://www.twitch.tv/{display_id}", icon_url=icon)
+    embed=discord.Embed(title=title, url=url, description=f"**現在行われている配信の同時接続数(視聴者数)が{trigger/10000}万人を突破しました!**", color=0x864ffe, timestamp=dt.utcnow())
+    embed.set_author(name=f"{name}({display_id})", url=f"https://www.twitch.tv/{display_id}", icon_url=icon)
     embed.set_image(url=thumbnail)
     embed.add_field(name="達成日時", value=f"**<t:{int(updated_at.timestamp())}:F>(<t:{int(updated_at.timestamp())}:R>)**", inline=True)
     embed.add_field(name="現在の同時接続数(視聴者数)", value=f"**{current_viewers:,}人**", inline=True)
@@ -227,8 +227,8 @@ def tcstream_notice_currentviewers(display_id: str, name: str, icon: str, title:
     return embed
 
 def tcstream_notice_play(display_id: str, name: str, icon: str, title: str, url: str, thumbnail: str, trigger: int, view_count: int, updated_at: DateTime):
-    embed=discord.Embed(title=f"{name}({display_id})", url=url, description=f"**再生回数が{trigger:,}回を突破しました!**", color=0x864ffe, timestamp=dt.utcnow())
-    embed.set_author(name=name, url=f"https://www.twitch.tv/{display_id}", icon_url=icon)
+    embed=discord.Embed(title=title, url=url, description=f"**再生回数が{trigger:,}回を突破しました!**", color=0x864ffe, timestamp=dt.utcnow())
+    embed.set_author(name=f"{name}({display_id})", url=f"https://www.twitch.tv/{display_id}", icon_url=icon)
     embed.set_image(url=thumbnail)
     embed.add_field(name="達成日時", value=f"**<t:{int(updated_at.timestamp())}:F>(<t:{int(updated_at.timestamp())}:R>)**", inline=True)
     embed.add_field(name="現在の再生回数", value=f"**{view_count:,}回**", inline=True)
