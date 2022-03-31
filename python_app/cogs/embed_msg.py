@@ -277,3 +277,63 @@ def twac_notice_tweet(display_id: str, name: str, icon: str, tweet: int, updated
     return embed
 
 # Twitter space
+def twspace_notice_title(display_id: str, name: str, icon: str, url: str, old_title: str, new_title: str):
+    embed=discord.Embed(title=new_title, url=url, description="**スペースのタイトルが変更されました**", color=0x00a1d8, timestamp=dt.utcnow())
+    embed.set_author(name=name, url=f"https://twitter.com/{display_id}", icon_url=icon)
+    embed.set_image(url='https://cdn.discordapp.com/attachments/788107610943520861/894182313955577896/image0.jpg')
+    embed.add_field(name="変更前", value=f"**{old_title}**", inline=True)
+    embed.add_field(name="変更後", value=f"**{new_title}**", inline=True)
+    embed.set_footer(text="EliteBot v2", icon_url="https://media.discordapp.net/attachments/788107610943520861/939782491303211018/IMG_6360.png")
+    return embed
+
+def twspace_notice_sstime(display_id: str, name: str, icon: str, title: str, url: str, old_sstime: DateTime, new_sstime: DateTime):
+    embed=discord.Embed(title=title, url=url, description="**スペース開始予定時刻が変更されました**", color=0x00a1d8, timestamp=dt.utcnow())
+    embed.set_author(name=name, url=f"https://twitter.com/{display_id}", icon_url=icon)
+    embed.set_image(url='https://cdn.discordapp.com/attachments/788107610943520861/894182313955577896/image0.jpg')
+    embed.add_field(name="変更前", value=f"**<t:{int(old_sstime.timestamp())}:F>(<t:{int(old_sstime.timestamp())}:R>)**", inline=True)
+    embed.add_field(name="変更後", value=f"**<t:{int(new_sstime.timestamp())}:F>(<t:{int(new_sstime.timestamp())}:R>)**", inline=True)
+    embed.set_footer(text="EliteBot v2", icon_url="https://media.discordapp.net/attachments/788107610943520861/939782491303211018/IMG_6360.png")
+    return embed
+
+def twspace_notice_nonetolive(display_id: str, name: str, icon: str, title: str, url: str, as_time: DateTime):
+    embed=discord.Embed(title=title, url=url, description="**ゲリラスペースが開始されました!**", color=0x00a1d8, timestamp=dt.utcnow())
+    embed.set_author(name=name, url=f"https://twitter.com/{display_id}", icon_url=icon)
+    embed.set_image(url='https://cdn.discordapp.com/attachments/788107610943520861/894182313955577896/image0.jpg')
+    embed.add_field(name="開始日時", value=f"**<t:{int(as_time.timestamp())}:F>(<t:{int(as_time.timestamp())}:R>)**", inline=True)
+    embed.set_footer(text="EliteBot v2", icon_url="https://media.discordapp.net/attachments/788107610943520861/939782491303211018/IMG_6360.png")
+    return embed
+
+def twspace_notice_livetonone(display_id: str, name: str, icon: str, title: str, url: str, as_time: DateTime, ae_time: DateTime):
+    embed=discord.Embed(title=title, url=url, description="**スペースが終了しました**", color=0x00a1d8, timestamp=dt.utcnow())
+    embed.set_author(name=name, url=f"https://twitter.com/{display_id}", icon_url=icon)
+    embed.set_image(url='https://cdn.discordapp.com/attachments/788107610943520861/894182313955577896/image0.jpg')
+    embed.add_field(name="開始日時", value=f"**<t:{int(as_time.timestamp())}:F>(<t:{int(as_time.timestamp())}:R>)**", inline=True)
+    embed.add_field(name="終了日時", value=f"**<t:{int(ae_time.timestamp())}:F>(<t:{int(ae_time.timestamp())}:R>)**", inline=True)
+    embed.set_footer(text="EliteBot v2", icon_url="https://media.discordapp.net/attachments/788107610943520861/939782491303211018/IMG_6360.png")
+    return embed
+
+def twspace_notice_stolive(display_id: str, name: str, icon: str, title: str, url: str, ss_time: DateTime, as_time: DateTime):
+    embed=discord.Embed(title=title, url=url, description="**スペースが開始されました!**", color=0x00a1d8, timestamp=dt.utcnow())
+    embed.set_author(name=name, url=f"https://twitter.com/{display_id}", icon_url=icon)
+    embed.set_image(url='https://cdn.discordapp.com/attachments/788107610943520861/894182313955577896/image0.jpg')
+    embed.add_field(name="開始予定日時", value=f"**<t:{int(ss_time.timestamp())}:F>(<t:{int(ss_time.timestamp())}:R>)**", inline=True)
+    embed.add_field(name="開始日時", value=f"**<t:{int(as_time.timestamp())}:F>(<t:{int(as_time.timestamp())}:R>)**", inline=True)
+    embed.set_footer(text="EliteBot v2", icon_url="https://media.discordapp.net/attachments/788107610943520861/939782491303211018/IMG_6360.png")
+    return embed
+
+def twspace_notice_nonetos(display_id: str, name: str, icon: str, title: str, url: str, ss_time: DateTime):
+    embed=discord.Embed(title=title, url=url, description="**スペースがスケジュールされました!**", color=0x00a1d8, timestamp=dt.utcnow())
+    embed.set_author(name=name, url=f"https://twitter.com/{display_id}", icon_url=icon)
+    embed.set_image(url='https://cdn.discordapp.com/attachments/788107610943520861/894182313955577896/image0.jpg')
+    embed.add_field(name="開始予定日時", value=f"**<t:{int(ss_time.timestamp())}:F>(<t:{int(ss_time.timestamp())}:R>)**", inline=True)
+    embed.set_footer(text="EliteBot v2", icon_url="https://media.discordapp.net/attachments/788107610943520861/939782491303211018/IMG_6360.png")
+    return embed
+
+def twspace_notice_currentviewers(display_id: str, name: str, icon: str, title: str, url: str, trigger: int, current_viewers: int, updated_at: DateTime):
+    embed=discord.Embed(title=title, url=url, description=f"**現在行われているスペースの視聴者数が{trigger/10000}万人を突破しました!**", color=0x00a1d8, timestamp=dt.utcnow())
+    embed.set_author(name=name, url=f"https://twitter.com/{display_id}", icon_url=icon)
+    embed.set_image(url='https://cdn.discordapp.com/attachments/788107610943520861/894182313955577896/image0.jpg')
+    embed.add_field(name="達成日時", value=f"**<t:{int(updated_at.timestamp())}:F>(<t:{int(updated_at.timestamp())}:R>)**", inline=True)
+    embed.add_field(name="現在の視聴者数", value=f"**{current_viewers:,}人**", inline=True)
+    embed.set_footer(text="EliteBot v2", icon_url="https://media.discordapp.net/attachments/788107610943520861/939782491303211018/IMG_6360.png")
+    return embed

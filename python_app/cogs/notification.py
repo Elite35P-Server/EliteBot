@@ -24,6 +24,7 @@ class Notification(commands.Cog):
         self.tcch_notice.start()
         self.tcstream_notice.start()
         self.twac_notice.start()
+        self.twspace_notice.start()
     
     def cog_unload(self):
         self.ytch_notice.cancel()
@@ -31,6 +32,7 @@ class Notification(commands.Cog):
         self.tcch_notice.cancel()
         self.tcstream_notice.cancel()
         self.twac_notice.cancel()
+        self.twspace_notice.cancel()
 
 
     # YouTube Channel Notice
@@ -432,25 +434,25 @@ class Notification(commands.Cog):
                                 if int(stream_latest.view_count/10000) > int(stream_old.view_count/10000):
                                     trigger = int(stream_latest.view_count/10000)*10000
                                     if stream_latest.status == 'live':
-                                        msg = await notice_ch.send(embed=embed_msg.tcstream_notice_play_live(ch_latest.display_id, ch_latest.name, ch_latest.icon, stream_latest.title, stream_latest.url, stream_latest.thumbnail, trigger, stream_latest.current_viewers, stream_latest.updated_at))
+                                        msg = await notice_ch.send(embed=embed_msg.tcstream_notice_play_live(ch_latest.display_id, ch_latest.name, ch_latest.icon, stream_latest.title, stream_latest.url, stream_latest.thumbnail, trigger, stream_latest.view_count, stream_latest.updated_at))
                                     else:
-                                        msg = await notice_ch.send(embed=embed_msg.tcstream_notice_play(ch_latest.display_id, ch_latest.name, ch_latest.icon, stream_latest.title, stream_latest.url, stream_latest.thumbnail, trigger, stream_latest.current_viewers, stream_latest.updated_at))
+                                        msg = await notice_ch.send(embed=embed_msg.tcstream_notice_play(ch_latest.display_id, ch_latest.name, ch_latest.icon, stream_latest.title, stream_latest.url, stream_latest.thumbnail, trigger, stream_latest.view_count, stream_latest.updated_at))
                                     await msg.publish()
                             elif stream_latest.view_count < 1000000:
                                 if int(stream_latest.view_count/50000) > int(stream_latest.view_count/500000):
                                     trigger = int(stream_latest.view_count/50000)*50000
                                     if stream_latest.status == 'live':
-                                        msg = await notice_ch.send(embed=embed_msg.tcstream_notice_play_live(ch_latest.display_id, ch_latest.name, ch_latest.icon, stream_latest.title, stream_latest.url, stream_latest.thumbnail, trigger, stream_latest.current_viewers, stream_latest.updated_at))
+                                        msg = await notice_ch.send(embed=embed_msg.tcstream_notice_play_live(ch_latest.display_id, ch_latest.name, ch_latest.icon, stream_latest.title, stream_latest.url, stream_latest.thumbnail, trigger, stream_latest.view_count, stream_latest.updated_at))
                                     else:
-                                        msg = await notice_ch.send(embed=embed_msg.tcstream_notice_play(ch_latest.display_id, ch_latest.name, ch_latest.icon, stream_latest.title, stream_latest.url, stream_latest.thumbnail, trigger, stream_latest.current_viewers, stream_latest.updated_at))
+                                        msg = await notice_ch.send(embed=embed_msg.tcstream_notice_play(ch_latest.display_id, ch_latest.name, ch_latest.icon, stream_latest.title, stream_latest.url, stream_latest.thumbnail, trigger, stream_latest.view_count, stream_latest.updated_at))
                                     await msg.publish()
                             else:
                                 if int(stream_latest.view_count/1000000) > int(stream_latest.view_count/1000000):
                                     trigger = int(stream_latest.view_count/1000000)*1000000
                                     if stream_latest.status == 'live':
-                                        msg = await notice_ch.send(embed=embed_msg.tcstream_notice_play_live(ch_latest.display_id, ch_latest.name, ch_latest.icon, stream_latest.title, stream_latest.url, stream_latest.thumbnail, trigger, stream_latest.current_viewers, stream_latest.updated_at))
+                                        msg = await notice_ch.send(embed=embed_msg.tcstream_notice_play_live(ch_latest.display_id, ch_latest.name, ch_latest.icon, stream_latest.title, stream_latest.url, stream_latest.thumbnail, trigger, stream_latest.view_count, stream_latest.updated_at))
                                     else:
-                                        msg = await notice_ch.send(embed=embed_msg.tcstream_notice_play(ch_latest.display_id, ch_latest.name, ch_latest.icon, stream_latest.title, stream_latest.url, stream_latest.thumbnail, trigger, stream_latest.current_viewers, stream_latest.updated_at))
+                                        msg = await notice_ch.send(embed=embed_msg.tcstream_notice_play(ch_latest.display_id, ch_latest.name, ch_latest.icon, stream_latest.title, stream_latest.url, stream_latest.thumbnail, trigger, stream_latest.view_count, stream_latest.updated_at))
                                     await msg.publish()
                             
                             stream_old.view_count = stream_latest.view_count
@@ -556,8 +558,110 @@ class Notification(commands.Cog):
                 twac_old.tweet_count = twac_latest.tweet_count
                 
             db.commit()
+    
+    # Twitter Space Notice
+    @tasks.loop(seconds=5)
+    async def twspace_notice(self):
+        notice_ch = self.bot.get_channel(self.notice_chid)
+        with SessionLocal() as db:
+            twac_latest = crud.get_twac(db, self.twitch_id)
+            spaces_latest = crud.get_twspaces_date(db)
+            spaces_old = crud.get_twspaces_date_old(db)
+            
+            if spaces_latest == []:
+                self.logger.error('Not found Twittr space in DB.')
+                return
             
             
+            for space_latest in spaces_latest:
+                if spaces_old == []:
+                    self.logger.warn(f'Not found Twitter space in Old DB.')
+                    space = schemas.TwitterSpace(
+                        id=space_latest.id,
+                        title=space_latest.title,
+                        url=space_latest.url,
+                        status=space_latest.status,
+                        audience_count=space_latest.audience_count,
+                        ss_time=space_latest.ss_time,
+                        as_time=space_latest.as_time,
+                        ae_time=space_latest.ae_time,
+                        created_at=space_latest.created_at,
+                        updated_at=space_latest.updated_at,
+                    )
+                    crud.update_twspace_old(db, self.twitter_id, space)
+                    continue
+                
+                for space_old in spaces_old:
+                    if space_latest.id == space_old.id:
+                        # Twitterスペースタイトルが変更された時
+                        if space_latest.title != space_old.title:
+                            self.logger.info(f'Update Twittr space audience_count title. ID: {space_latest.id}, Title: {space_old.title} -> {space_latest.title}')
+                            msg = await notice_ch.send(embed=embed_msg.twspace_notice_title(twac_latest.display_id, twac_latest.name, twac_latest.icon, space_latest.url, space_old.title, space_latest.title))
+                            await msg.publish()
+                            space_old.title = space_latest.title
+                            
+                        # Twitterスペース開始予定時刻が変更された時
+                        elif space_latest.ss_time != space_old.ss_time:
+                            self.logger.info(f'Update Twittr space ss_time. ID: {space_latest.id}, ScheduledStartTime: {space_old.ss_time} -> {space_latest.ss_time}')
+                            msg = await notice_ch.send(content=self.notice_role, embed=embed_msg.twspace_notice_sstime(twac_latest.display_id, twac_latest.name, twac_latest.icon, space_latest.title, space_latest.url, space_old.ss_time, space_latest.as_time))
+                            await msg.publish()
+                            space_old.ss_time = space_latest.ss_time
+                            
+                        # Twitterスペースステータスが更新された時
+                        elif space_latest.status != space_old.status:
+                            self.logger.info(f'Update Twittr space audience_count status. ID: {space_latest.id}, Title: {space_latest.title}, Status: {space_old.status} -> {space_latest.status}')
+                            if space_old.status == 'scheduled' and space_old.status == 'live':
+                                msg = await notice_ch.send(content=self.notice_role, embed=embed_msg.twspace_notice_stolive(twac_latest.display_id, twac_latest.name, twac_latest.icon, space_latest.title, space_latest.url, space_latest.ss_time, space_latest.as_time))
+                                await msg.publish()
+                            if space_old.status == 'live' and space_latest.status == 'none':
+                                msg = await notice_ch.send(embed=embed_msg.twspace_notice_livetonone(twac_latest.display_id, twac_latest.name, twac_latest.icon, space_latest.title, space_latest.url, space_latest.as_time, space_latest.ae_time))
+                                await msg.publish()
+                            space_old.status = space_latest.status
+                        
+                        # Twitterスペース視聴者数が更新された時
+                        elif space_latest.audience_count != space_old.audience_count:
+                            if space_old.audience_count == None:
+                                self.logger.info(f'Update Twittr space audience_count current viewers. ID: {space_latest.id}, Title: {space_latest.title}, CurrentViewers: {space_latest.audience_count}')
+                                space_old.audience_count = space_latest.audience_count
+                            elif space_latest.audience_count == None:
+                                self.logger.info(f'Update Twittr space audience_count max current viewers. ID: {space_latest.id}, Title: {space_latest.title}, MaxCurrentViewers: {space_latest.audience_count}')
+                                space_old.audience_count = space_latest.audience_count
+                            elif space_latest.status == 'live' and space_latest.audience_count > space_old.audience_count:
+                                self.logger.info(f'Update Twittr space audience_count max current viewers. ID: {space_latest.id}, Title: {space_latest.title}, MaxCurrentViewers: {space_old.audience_count} -> {space_latest.audience_count}')
+                                if int(space_latest.audience_count/10000) > int(space_old.audience_count/10000):
+                                    trigger = int(space_latest.audience_count/10000)*10000
+                                    msg = await notice_ch.send(embed=embed_msg.twspace_notice_currentviewers(twac_latest.display_id, twac_latest.name, twac_latest.icon, space_latest.title, space_latest.url, trigger, space_latest.audience_count, space_latest.updated_at))
+                                    await msg.publish()
+                                space_old.audience_count = space_latest.audience_count
+                        
+                        db.commit()
+                        break
+                
+                
+                if space_latest.id not in [space.id for space in spaces_old]:
+                    # Twitterスペースが作成された時
+                    self.logger.info(f'New Twitter space. ID: {space_latest.id}, Title: {space_latest.title}')
+                    if space_latest.status == 'live':
+                        msg = await notice_ch.send(content=self.notice_role, embed=embed_msg.twspace_notice_nonetolive(twac_latest.display_id, twac_latest.name, twac_latest.icon, space_latest.title, space_latest.url, space_latest.as_time))
+                        await msg.publish()
+                    elif space_latest.status == 'scheduled':
+                        msg = await notice_ch.send(content=self.notice_role, embed=embed_msg.twspace_notice_nonetos(twac_latest.display_id, twac_latest.name, twac_latest.icon, space_latest.title, space_latest.url, space_latest.ss_time))
+                        await msg.publish()
+
+                    
+                    space = schemas.TwitterSpace(
+                        id=space_latest.id,
+                        title=space_latest.title,
+                        url=space_latest.url,
+                        status=space_latest.status,
+                        audience_count=space_latest.audience_count,
+                        ss_time=space_latest.ss_time,
+                        as_time=space_latest.as_time,
+                        ae_time=space_latest.ae_time,
+                        created_at=space_latest.created_at,
+                        updated_at=space_latest.updated_at,
+                    )
+                    crud.update_twspace_old(db, self.twitter_id, space)
 
     
     @ytch_notice.before_loop
@@ -565,6 +669,7 @@ class Notification(commands.Cog):
     @tcch_notice.before_loop
     @tcstream_notice.before_loop
     @twac_notice.before_loop
+    @twspace_notice.before_loop
     async def wait_notification_tasks(self):
         await self.bot.wait_until_ready()
         self.logger.info('Notification tasks start waiting...')

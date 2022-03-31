@@ -459,7 +459,7 @@ def update_twspace_old(db: Session, tw_id: str, space: schemas.TwitterSpace):
             db.commit()
             
     else:
-        space_db = models.TwitterSpaceLatest(
+        space_db = models.TwitterSpaceOld(
             tw_id=tw_id,
             id=space.id,
             title=space.title,
