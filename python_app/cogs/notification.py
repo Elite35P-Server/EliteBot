@@ -439,7 +439,7 @@ class Notification(commands.Cog):
                                         msg = await notice_ch.send(embed=embed_msg.tcstream_notice_play(ch_latest.display_id, ch_latest.name, ch_latest.icon, stream_latest.title, stream_latest.url, stream_latest.thumbnail, trigger, stream_latest.view_count, stream_latest.updated_at))
                                     await msg.publish()
                             elif stream_latest.view_count < 1000000:
-                                if int(stream_latest.view_count/50000) > int(stream_latest.view_count/500000):
+                                if int(stream_latest.view_count/50000) > int(stream_old.view_count/50000):
                                     trigger = int(stream_latest.view_count/50000)*50000
                                     if stream_latest.status == 'live':
                                         msg = await notice_ch.send(embed=embed_msg.tcstream_notice_play_live(ch_latest.display_id, ch_latest.name, ch_latest.icon, stream_latest.title, stream_latest.url, stream_latest.thumbnail, trigger, stream_latest.view_count, stream_latest.updated_at))
@@ -447,8 +447,8 @@ class Notification(commands.Cog):
                                         msg = await notice_ch.send(embed=embed_msg.tcstream_notice_play(ch_latest.display_id, ch_latest.name, ch_latest.icon, stream_latest.title, stream_latest.url, stream_latest.thumbnail, trigger, stream_latest.view_count, stream_latest.updated_at))
                                     await msg.publish()
                             else:
-                                if int(stream_latest.view_count/1000000) > int(stream_latest.view_count/1000000):
-                                    trigger = int(stream_latest.view_count/1000000)*1000000
+                                if int(stream_latest.view_count/100000) > int(stream_old.view_count/100000):
+                                    trigger = int(stream_latest.view_count/100000)*100000
                                     if stream_latest.status == 'live':
                                         msg = await notice_ch.send(embed=embed_msg.tcstream_notice_play_live(ch_latest.display_id, ch_latest.name, ch_latest.icon, stream_latest.title, stream_latest.url, stream_latest.thumbnail, trigger, stream_latest.view_count, stream_latest.updated_at))
                                     else:
