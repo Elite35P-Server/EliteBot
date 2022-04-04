@@ -16,6 +16,7 @@ bot = discord.Bot()
 #Load extensions
 bot.load_extension('cogs.api_tasks')
 bot.load_extension('cogs.notification')
+bot.load_extension('cogs.commands')
 
 @bot.event
 async def on_ready():

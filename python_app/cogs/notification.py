@@ -1,11 +1,9 @@
 import os
 from discord.ext import tasks, commands
-from cogs import crud, models
+from cogs import crud, schemas, embed_msg
 from cogs.db import SessionLocal
-from cogs import embed_msg
 from logging import getLogger, config
 from main import log_config
-from cogs import schemas
 
 config.dictConfig(log_config)
 
