@@ -38,7 +38,7 @@ async def on_ready():
                 logger.info('API connection success.')
             else:
                 await check_api.edit("MikoAPIへの接続に失敗しました")
-                logger.error('API connection failed.')
+                logger.error('API connection failed.', res.status)
 
 
 if __name__ == '__main__':

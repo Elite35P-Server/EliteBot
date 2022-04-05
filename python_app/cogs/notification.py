@@ -102,7 +102,8 @@ class Notification(commands.Cog):
                     await msg.publish()
                 ch_old.video_count = ch_latest.video_count
                 
-            db.commit()
+            await db.commit()
+            await db.refresh(ch_old)
             
 
     # YouTube Video Notice
@@ -246,7 +247,8 @@ class Notification(commands.Cog):
                             self.logger.info(f'Update YouTube video actuary end time. ID: {video_latest.id}, Title: {video_latest.title}, ActuaryEndTime: {video_old.ae_time} -> {video_latest.ae_time}')
                             video_old.ae_time = video_latest.ae_time
                             
-                        db.commit()
+                        await db.commit()
+                        await db.refresh(video_old)
                         break
                     
                 if video_latest.id not in [video.id for video in videos_old]:
@@ -347,7 +349,8 @@ class Notification(commands.Cog):
                     pass
                 ch_old.play_count = ch_latest.play_count
                 
-            db.commit()
+            await db.commit()
+            await db.refresh(ch_old)
     
     # Twitch Stream Notice
     @tasks.loop(seconds=5)
@@ -466,7 +469,8 @@ class Notification(commands.Cog):
                             stream_old.game_id = stream_latest.game_id
                             stream_old.game_name = stream_latest.game_name
                         
-                        db.commit()
+                        await db.commit()
+                        await db.refresh(stream_old)
                         break
                 
                 if stream_latest.id not in [stream.id for stream in streams_old]:
@@ -555,7 +559,8 @@ class Notification(commands.Cog):
                     await msg.publish()
                 twac_old.tweet_count = twac_latest.tweet_count
                 
-            db.commit()
+            await db.commit()
+            await db.refresh(twac_old)
     
     # Twitter Space Notice
     @tasks.loop(seconds=5)
@@ -632,7 +637,8 @@ class Notification(commands.Cog):
                                     await msg.publish()
                                 space_old.audience_count = space_latest.audience_count
                         
-                        db.commit()
+                        await db.commit()
+                        await db.refresh(space_old)
                         break
                 
                 
