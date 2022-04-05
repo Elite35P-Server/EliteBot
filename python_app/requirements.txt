@@ -1,6 +1,5 @@
 git+https://github.com/Pycord-Development/pycord
 aiohttp
+aiosqlite
 pydantic
-mysqlclient
-mysql-connector-python
-sqlalchemy
+sqlalchemy[asyncio]

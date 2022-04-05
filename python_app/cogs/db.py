@@ -1,15 +1,21 @@
 import os
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
+import asyncio
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
+from cogs import models
 
-SQLALCHEMY_DATABASE_URL = os.environ.get("DB_URL")
-# SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
-# SQLALCHEMY_DATABASE_URL = "postgresql://user:password@postgresserver/db"
+# "sqlite:///./sql_app.db"
+# "postgresql://user:password@postgresserver/db"
+async_engine = create_async_engine(os.environ.get("DB_URL"))
 
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
-)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-Base = declarative_base()
+async def setup():
+    async with async_engine.begin() as conn:
+        await conn.run_sync(models.Base.metadata.drop_all)
+        await conn.run_sync(models.Base.metadata.create_all)
+        
+    async_session = sessionmaker(
+        async_engine, expire_on_commit=False, class_=AsyncSession
+    )
+    return async_session
+        
+async_session = asyncio.run(setup())

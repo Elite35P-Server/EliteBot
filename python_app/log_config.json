@@ -39,6 +39,11 @@
             "handlers": ["consoleHandler", "fileHandler"],
             "propagate": false
         },
+        "commands": {
+            "level": "DEBUG",
+            "handlers": ["consoleHandler", "fileHandler"],
+            "propagate": false
+        },
         "same_hierarchy": {
             "level": "DEBUG",
             "handlers": ["consoleHandler", "fileHandler"],

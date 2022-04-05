@@ -5,7 +5,7 @@ from cogs import models
 from cogs import schemas
 
 
-def get_ytch(db: Session, id: str):
+async def get_ytch(db: Session, id: str):
     return db.query(models.YouTubeChannelLatest).filter(models.YouTubeChannelLatest.id == id).first()
 
 def get_ytch_old(db: Session, id: str):
