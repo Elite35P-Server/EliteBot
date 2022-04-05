@@ -2,14 +2,12 @@ import asyncio
 import aiohttp
 import os
 from discord.ext import tasks, commands
-from cogs import crud, models
-from cogs.db import SessionLocal, engine
+from cogs import async_crud, schemas
+from cogs.db import async_session
 from logging import getLogger, config
 from main import log_config
-from cogs import schemas
 
 config.dictConfig(log_config)
-models.Base.metadata.create_all(bind=engine)
 
 class APITasks(commands.Cog):
     def __init__(self, bot):
@@ -59,9 +57,9 @@ class APITasks(commands.Cog):
                     #videos = [],
                 )
                 #print(ch)
-                with SessionLocal() as db:
+                async with async_session() as db:
                     try:
-                        crud.update_ytch(db=db, ch=ch)
+                        await async_crud.update_ytch(db=db, ch=ch)
                     except Exception as e:
                             self.logger.error(e)
             
@@ -69,7 +67,7 @@ class APITasks(commands.Cog):
             skip = 0
             limit = 35
             request_url = "/youtube/videos/"
-            with SessionLocal() as db:
+            async with async_session() as db:
                 while True:
                     params = {
                         'order': 'created_at',
@@ -99,7 +97,7 @@ class APITasks(commands.Cog):
                         )
                         #print(youtube_video)
                         try:
-                            crud.update_ytvideo(db=db, ch_id=youtube_channel['id'], video=youtube_video)
+                            await async_crud.update_ytvideo(db=db, ch_id=youtube_channel['id'], video=youtube_video)
                         except Exception as e:
                             self.logger.error(e)
                     skip += 35
@@ -128,9 +126,9 @@ class APITasks(commands.Cog):
                     updated_at=twitch_channel['updated_at'],
                 )
                 #print(ch)
-                with SessionLocal() as db:
+                async with async_session() as db:
                     try:
-                        crud.update_tcch(db=db, ch=ch)
+                        await async_crud.update_tcch(db=db, ch=ch)
                     except Exception as e:
                             self.logger.error(e)
         
@@ -138,7 +136,7 @@ class APITasks(commands.Cog):
             skip = 0
             limit = 35
             request_url = "/twitch/streams/"
-            with SessionLocal() as db:
+            async with async_session() as db:
                 while True:
                     params = {
                         'order': 'created_at',
@@ -168,7 +166,7 @@ class APITasks(commands.Cog):
                         )
                         #print(twitch_stream)
                         try:
-                            crud.update_tcstream(db=db, ch_id=twitch_channel['id'], stream=twitch_stream)
+                            await async_crud.update_tcstream(db=db, ch_id=twitch_channel['id'], stream=twitch_stream)
                         except Exception as e:
                             self.logger.error(e)
                     skip += 35
@@ -197,9 +195,9 @@ class APITasks(commands.Cog):
                     updated_at=twitter_account['updated_at'],
                 )
                 #print(tw)
-                with SessionLocal() as db:
+                async with async_session() as db:
                     try:
-                        crud.update_twac(db=db, tw=tw)
+                        await async_crud.update_twac(db=db, tw=tw)
                     except Exception as e:
                             self.logger.error(e)
                 
@@ -207,7 +205,7 @@ class APITasks(commands.Cog):
             skip = 0
             limit = 35
             request_url = "/twitter/space/"
-            with SessionLocal() as db:
+            async with async_session() as db:
                 while True:
                     params = {
                         'order': 'created_at',
@@ -232,7 +230,7 @@ class APITasks(commands.Cog):
                         )
                         #print(twitter_space)
                         try:
-                            crud.update_twspace(db=db, tw_id=twitter_account['id'], space=twitter_space)
+                            await async_crud.update_twspace(db=db, tw_id=twitter_account['id'], space=twitter_space)
                         except Exception as e:
                             self.logger.error(e)
                     skip += 35

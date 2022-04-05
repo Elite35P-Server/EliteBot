@@ -1,7 +1,7 @@
 import os
 from discord.ext import tasks, commands
-from cogs import crud, schemas, embed_msg
-from cogs.db import SessionLocal
+from cogs import async_crud, schemas, embed_msg
+from cogs.db import async_session
 from logging import getLogger, config
 from main import log_config
 
@@ -37,16 +37,16 @@ class Notification(commands.Cog):
     @tasks.loop(seconds=5)
     async def ytch_notice(self):
         notice_ch = self.bot.get_channel(self.notice_chid)
-        with SessionLocal() as db:
-            ch_latest = crud.get_ytch(db, self.youtube_id)
-            ch_old = crud.get_ytch_old(db, self.youtube_id)
+        async with async_session() as db:
+            ch_latest = await async_crud.get_ytch(db, self.youtube_id)
+            ch_old = await async_crud.get_ytch_old(db, self.youtube_id)
             
             if not ch_latest:
                 self.logger.error('Not found YouTube channel in DB.')
                 return
             if not ch_old:
                 self.logger.warn('Not found YouTube channel in Old DB.')
-                crud.update_ytch_old(db, ch_latest)
+                await async_crud.update_ytch_old(db, ch_latest)
                 return
         
 
@@ -109,10 +109,10 @@ class Notification(commands.Cog):
     @tasks.loop(seconds=5)
     async def ytvideo_notice(self):
         notice_ch = self.bot.get_channel(self.notice_chid)
-        with SessionLocal() as db:
-            ch_latest = crud.get_ytch(db, self.youtube_id)
-            videos_latest = crud.get_ytvideos_date(db)
-            videos_old = crud.get_ytvideos_date_old(db)
+        async with async_session() as db:
+            ch_latest = await async_crud.get_ytch(db, self.youtube_id)
+            videos_latest = await async_crud.get_ytvideos_date(db)
+            videos_old = await async_crud.get_ytvideos_date_old(db)
             
             if videos_latest == []:
                 self.logger.error('Not found YouTube videos in DB.')
@@ -139,7 +139,7 @@ class Notification(commands.Cog):
                         created_at=video_latest.created_at,
                         updated_at=video_latest.updated_at,
                     )
-                    crud.update_ytvideo_old(db, self.youtube_id, video)
+                    await async_crud.update_ytvideo_old(db, self.youtube_id, video)
                     continue
                 
                 for video_old in videos_old:
@@ -277,23 +277,23 @@ class Notification(commands.Cog):
                         created_at=video_latest.created_at,
                         updated_at=video_latest.updated_at,
                     )
-                    crud.update_ytvideo_old(db, self.youtube_id, video)
+                    await async_crud.update_ytvideo_old(db, self.youtube_id, video)
         
 
     # Twitch Channel Notice
     @tasks.loop(seconds=5)
     async def tcch_notice(self):
         notice_ch = self.bot.get_channel(self.notice_chid)
-        with SessionLocal() as db:
-            ch_latest = crud.get_tcch(db, self.twitch_id)
-            ch_old = crud.get_tcch_old(db, self.twitch_id)
+        async with async_session() as db:
+            ch_latest = await async_crud.get_tcch(db, self.twitch_id)
+            ch_old = await async_crud.get_tcch_old(db, self.twitch_id)
             
             if not ch_latest:
                 self.logger.error('Not found Twitch channel in DB.')
                 return
             if not ch_old:
                 self.logger.warn('Not found Twitch channel in Old DB.')
-                crud.update_tcch_old(db, ch_latest)
+                await async_crud.update_tcch_old(db, ch_latest)
                 return
         
 
@@ -353,10 +353,10 @@ class Notification(commands.Cog):
     @tasks.loop(seconds=5)
     async def tcstream_notice(self):
         notice_ch = self.bot.get_channel(self.notice_chid)
-        with SessionLocal() as db:
-            ch_latest = crud.get_tcch(db, self.twitch_id)
-            streams_latest = crud.get_tcstreams_date(db)
-            streams_old = crud.get_tcstreams_date_old(db)
+        async with async_session() as db:
+            ch_latest = await async_crud.get_tcch(db, self.twitch_id)
+            streams_latest = await async_crud.get_tcstreams_date(db)
+            streams_old = await async_crud.get_tcstreams_date_old(db)
             
             if streams_latest == []:
                 self.logger.error('Not found Twitch streams in DB.')
@@ -384,7 +384,7 @@ class Notification(commands.Cog):
                         created_at=stream_latest.created_at,
                         updated_at=stream_latest.updated_at,
                     )
-                    crud.update_tcstream_old(db, self.twitch_id, stream)
+                    await async_crud.update_tcstream_old(db, self.twitch_id, stream)
                     continue
                 
                 for stream_old in streams_old:
@@ -497,22 +497,22 @@ class Notification(commands.Cog):
                         created_at=stream_latest.created_at,
                         updated_at=stream_latest.updated_at,
                     )
-                    crud.update_tcstream_old(db, self.twitch_id, stream)
+                    await async_crud.update_tcstream_old(db, self.twitch_id, stream)
     
     # Twitter Account Notice
     @tasks.loop(seconds=5)
     async def twac_notice(self):
         notice_ch = self.bot.get_channel(self.notice_chid)
-        with SessionLocal() as db:
-            twac_latest = crud.get_twac(db, self.twitter_id)
-            twac_old = crud.get_twac_old(db, self.twitter_id)
+        async with async_session() as db:
+            twac_latest = await async_crud.get_twac(db, self.twitter_id)
+            twac_old = await async_crud.get_twac_old(db, self.twitter_id)
             
             if not twac_latest:
                 self.logger.error('Not found Twitter account in DB.')
                 return
             if not twac_old:
                 self.logger.warn('Not found Twitter account in Old DB.')
-                crud.update_twac_old(db, twac_latest)
+                await async_crud.update_twac_old(db, twac_latest)
                 return
             
             # Twitterアカウント名が変更された時
@@ -561,10 +561,10 @@ class Notification(commands.Cog):
     @tasks.loop(seconds=5)
     async def twspace_notice(self):
         notice_ch = self.bot.get_channel(self.notice_chid)
-        with SessionLocal() as db:
-            twac_latest = crud.get_twac(db, self.twitch_id)
-            spaces_latest = crud.get_twspaces_date(db)
-            spaces_old = crud.get_twspaces_date_old(db)
+        async with async_session() as db:
+            twac_latest = await async_crud.get_twac(db, self.twitch_id)
+            spaces_latest = await async_crud.get_twspaces_date(db)
+            spaces_old = await async_crud.get_twspaces_date_old(db)
             
             if spaces_latest == []:
                 self.logger.error('Not found Twittr space in DB.')
@@ -586,7 +586,7 @@ class Notification(commands.Cog):
                         created_at=space_latest.created_at,
                         updated_at=space_latest.updated_at,
                     )
-                    crud.update_twspace_old(db, self.twitter_id, space)
+                    await async_crud.update_twspace_old(db, self.twitter_id, space)
                     continue
                 
                 for space_old in spaces_old:
@@ -659,7 +659,7 @@ class Notification(commands.Cog):
                         created_at=space_latest.created_at,
                         updated_at=space_latest.updated_at,
                     )
-                    crud.update_twspace_old(db, self.twitter_id, space)
+                    await async_crud.update_twspace_old(db, self.twitter_id, space)
 
     
     @ytch_notice.before_loop

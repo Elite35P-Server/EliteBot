@@ -2,4 +2,4 @@
 python_app/logs/logs.log
 python_app/__pycache__/
 python_app/cogs/__pycache__/
-python_app/db/
+python_app/test/
