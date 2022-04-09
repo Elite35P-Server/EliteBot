@@ -123,8 +123,9 @@ class Notification(commands.Cog):
             for video_latest in videos_latest:
                 if videos_old == []:
                     self.logger.warn(f'Not found YouTube video in Old DB.')
+                    print(video_latest.id)
                     video = schemas.YouTubeVideo(
-                        id=video_latest.id, 
+                        id=video_latest.id,
                         title=video_latest.title,
                         thumbnails=video_latest.thumbnails,
                         description=video_latest.description,
@@ -250,7 +251,7 @@ class Notification(commands.Cog):
                         await db.commit()
                         await db.refresh(video_old)
                         break
-                    
+
                 if video_latest.id not in [video.id for video in videos_old]:
                     # YouTube配信待機枠または動画が作成された時
                     self.logger.info(f'New YouTube video. ID: {video_latest.id}, Title: {video_latest.title}')

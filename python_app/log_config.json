@@ -44,6 +44,11 @@
             "handlers": ["consoleHandler", "fileHandler"],
             "propagate": false
         },
+        "async_crud": {
+            "level": "DEBUG",
+            "handlers": ["consoleHandler", "fileHandler"],
+            "propagate": false
+        },
         "same_hierarchy": {
             "level": "DEBUG",
             "handlers": ["consoleHandler", "fileHandler"],

@@ -3,3 +3,4 @@ python_app/logs/logs.log
 python_app/__pycache__/
 python_app/cogs/__pycache__/
 python_app/test/
+python_app/sql_app.sqlite
