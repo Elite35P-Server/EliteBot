@@ -310,10 +310,8 @@ async def get_ytvideos_date(db: AsyncSession):
     except Exception as e:
         logger.error(e)
         return []
-    if ytvideos_db:
-        return ytvideos_db[0]
-    else:
-        return ytvideos_db
+    return ytvideos_db
+
 
 async def get_ytvideos_date_old(db: AsyncSession):
     try:
@@ -322,10 +320,7 @@ async def get_ytvideos_date_old(db: AsyncSession):
     except Exception as e:
         logger.error(e)
         return []
-    if ytvideos_db:
-        return ytvideos_db[0]
-    else:
-        return ytvideos_db
+    return ytvideos_db
 
 async def update_ytvideo(db: AsyncSession, ch_id: str, video: schemas.YouTubeVideo):
     video_db = await get_ytvideo(db, id=video.id)
@@ -448,10 +443,7 @@ async def get_twspaces_date(db: AsyncSession):
     except Exception as e:
         logger.error(e)
         return []
-    if twspaces_db:
-        return twspaces_db[0]
-    else:
-        return twspaces_db
+    return twspaces_db
 
 async def get_twspaces_date_old(db: AsyncSession):
     try:
@@ -460,10 +452,7 @@ async def get_twspaces_date_old(db: AsyncSession):
     except Exception as e:
         logger.error(e)
         return []
-    if twspaces_db:
-        return twspaces_db[0]
-    else:
-        return twspaces_db
+    return twspaces_db
 
 async def update_twspace(db: AsyncSession, tw_id: str, space: schemas.TwitterSpace):
     space_db = await get_twspace(db, id=space.id)
@@ -566,10 +555,7 @@ async def get_tcstreams_date(db: AsyncSession):
     except Exception as e:
         logger.error(e)
         return []
-    if tcstreams_db:
-        return tcstreams_db[0]
-    else:
-        return tcstreams_db
+    return tcstreams_db
 
 async def get_tcstreams_date_old(db: AsyncSession):
     try:
@@ -578,10 +564,7 @@ async def get_tcstreams_date_old(db: AsyncSession):
     except Exception as e:
         logger.error(e)
         return []
-    if tcstreams_db:
-        return tcstreams_db[0]
-    else:
-        return tcstreams_db
+    return tcstreams_db
 
 async def update_tcstream(db: AsyncSession, ch_id: str, stream: schemas.TwitchStream):
     stream_db = await get_tcstream(db, id=stream.id)

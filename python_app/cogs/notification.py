@@ -119,11 +119,10 @@ class Notification(commands.Cog):
                 self.logger.error('Not found YouTube videos in DB.')
                 return
             
-            
-            for video_latest in videos_latest:
-                if videos_old == []:
+            if videos_old == []:
+                for video_latest in videos_latest:
+                    video_latest = video_latest[0]
                     self.logger.warn(f'Not found YouTube video in Old DB.')
-                    print(video_latest.id)
                     video = schemas.YouTubeVideo(
                         id=video_latest.id,
                         title=video_latest.title,
@@ -142,9 +141,13 @@ class Notification(commands.Cog):
                         updated_at=video_latest.updated_at,
                     )
                     await async_crud.update_ytvideo_old(db, self.youtube_id, video)
-                    continue
+                return
+                
+            for video_latest in videos_latest:
+                video_latest = video_latest[0]
                 
                 for video_old in videos_old:
+                    video_old = video_old[0]
                     if video_latest.id == video_old.id:
                         # YouTube動画タイトルが変更された時
                         if video_latest.title != video_old.title:
@@ -252,16 +255,18 @@ class Notification(commands.Cog):
                         await db.refresh(video_old)
                         break
 
-                if video_latest.id not in [video.id for video in videos_old]:
+                if video_latest.id not in [video[0].id for video in videos_old]:
                     # YouTube配信待機枠または動画が作成された時
                     self.logger.info(f'New YouTube video. ID: {video_latest.id}, Title: {video_latest.title}')
                     if video_latest.status == 'upcoming':
                         msg = await notice_ch.send(content=self.notice_role, embed=embed_msg.ytvideo_notice_nonetoupcoming(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, video_latest.ss_time))
+                        await msg.publish()
                     elif video_latest.status == 'live':
                         msg = await notice_ch.send(content=self.notice_role, embed=embed_msg.ytvideo_notice_nonetolive(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, video_latest.as_time))
+                        await msg.publish()
                     elif video_latest.status == 'none' and video_latest.ss_time ==  None and video_latest.as_time ==  None and video_latest.ae_time ==  None:
                         msg = await notice_ch.send(content=self.notice_role, embed=embed_msg.ytvideo_notice_upload(ch_latest.id, ch_latest.name, ch_latest.icon, video_latest.title, video_latest.url, video_latest.id, video_latest.created_at))
-                    await msg.publish()
+                        await msg.publish()
                     
                     video = schemas.YouTubeVideo(
                         id=video_latest.id, 
@@ -366,9 +371,9 @@ class Notification(commands.Cog):
                 self.logger.error('Not found Twitch streams in DB.')
                 return
             
-            
-            for stream_latest in streams_latest:
-                if streams_old == []:
+            if streams_old == []:
+                for stream_latest in streams_latest:
+                    stream_latest = stream_latest[0]
                     self.logger.warn(f'Not found Twitch stream in Old DB.')
                     stream = schemas.TwitchStream(
                         id=stream_latest.id,
@@ -389,9 +394,13 @@ class Notification(commands.Cog):
                         updated_at=stream_latest.updated_at,
                     )
                     await async_crud.update_tcstream_old(db, self.twitch_id, stream)
-                    continue
+                return
+            
+            for stream_latest in streams_latest:
+                stream_latest = stream_latest[0]
                 
                 for stream_old in streams_old:
+                    stream_old = stream_old[0]
                     if stream_latest.id == stream_old.id:
                         # Twitch動画タイトルが変更された時
                         if stream_latest.title != stream_old.title:
@@ -474,7 +483,7 @@ class Notification(commands.Cog):
                         await db.refresh(stream_old)
                         break
                 
-                if stream_latest.id not in [stream.id for stream in streams_old]:
+                if stream_latest.id not in [stream[0].id for stream in streams_old]:
                     # Twitch配信または動画が作成された時
                     self.logger.info(f'New Twitch stream. ID: {stream_latest.id}, Title: {stream_latest.title}')
                     if stream_latest.status == 'live':
@@ -576,9 +585,9 @@ class Notification(commands.Cog):
                 self.logger.error('Not found Twittr space in DB.')
                 return
             
-            
-            for space_latest in spaces_latest:
-                if spaces_old == []:
+            if spaces_old == []:
+                for space_latest in spaces_latest:
+                    space_latest = space_latest[0]
                     self.logger.warn(f'Not found Twitter space in Old DB.')
                     space = schemas.TwitterSpace(
                         id=space_latest.id,
@@ -593,9 +602,13 @@ class Notification(commands.Cog):
                         updated_at=space_latest.updated_at,
                     )
                     await async_crud.update_twspace_old(db, self.twitter_id, space)
-                    continue
+                return
+            
+            for space_latest in spaces_latest:
+                space_latest = space_latest[0]
                 
                 for space_old in spaces_old:
+                    space_old = space_old[0]
                     if space_latest.id == space_old.id:
                         # Twitterスペースタイトルが変更された時
                         if space_latest.title != space_old.title:
@@ -643,7 +656,7 @@ class Notification(commands.Cog):
                         break
                 
                 
-                if space_latest.id not in [space.id for space in spaces_old]:
+                if space_latest.id not in [space[0].id for space in spaces_old]:
                     # Twitterスペースが作成された時
                     self.logger.info(f'New Twitter space. ID: {space_latest.id}, Title: {space_latest.title}')
                     if space_latest.status == 'live':
