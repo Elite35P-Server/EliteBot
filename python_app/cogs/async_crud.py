@@ -2,35 +2,36 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import desc, asc, select
 from sqlalchemy.sql.expression import delete
 from cogs import models, schemas
+from logging import getLogger, config
+from main import log_config
+
+config.dictConfig(log_config)
+logger = getLogger('async_crud')
 
 # YouTube Channel
 async def get_ytch(db: AsyncSession, id: str):
-    result = await (db.execute(select(
-        models.YouTubeChannelLatest.id,
-        models.YouTubeChannelLatest.name,
-        models.YouTubeChannelLatest.description,
-        models.YouTubeChannelLatest.icon,
-        models.YouTubeChannelLatest.status,
-        models.YouTubeChannelLatest.play_count,
-        models.YouTubeChannelLatest.subsc_count,
-        models.YouTubeChannelLatest.video_count,
-        models.YouTubeChannelLatest.updated_at
-    ).where(models.YouTubeChannelLatest.id == id)))
-    return result.first()
+    try:
+        result = await (db.execute(select(models.YouTubeChannelLatest).where(models.YouTubeChannelLatest.id == id)))
+        ytch_db = result.first()
+    except Exception as e:
+        logger.error(e)
+        return None
+    if ytch_db:
+        return ytch_db[0]
+    else:
+        return ytch_db
 
 async def get_ytch_old(db: AsyncSession, id: str):
-    result = await (db.execute(select(
-        models.YouTubeChannelOld.id,
-        models.YouTubeChannelOld.name,
-        models.YouTubeChannelOld.description,
-        models.YouTubeChannelOld.icon,
-        models.YouTubeChannelOld.status,
-        models.YouTubeChannelOld.play_count,
-        models.YouTubeChannelOld.subsc_count,
-        models.YouTubeChannelOld.video_count,
-        models.YouTubeChannelOld.updated_at
-    ).where(models.YouTubeChannelOld.id == id)))
-    return result.first()
+    try:
+        result = await (db.execute(select(models.YouTubeChannelOld).where(models.YouTubeChannelOld.id == id)))
+        ytch_db = result.first()
+    except Exception as e:
+        logger.error(e)
+        return None
+    if ytch_db:
+        return ytch_db[0]
+    else:
+        return ytch_db
 
 async def update_ytch(db: AsyncSession, ch: schemas.YouTubeCh):
     ch_db = await get_ytch(db, id=ch.id)
@@ -99,34 +100,28 @@ async def update_ytch_old(db: AsyncSession, ch: schemas.YouTubeCh):
 
 #Twitter Account
 async def get_twac(db: AsyncSession, id: str):
-    result = await (db.execute(select(
-        models.TwitterAccountLatest.id,
-        models.TwitterAccountLatest.display_id,
-        models.TwitterAccountLatest.name,
-        models.TwitterAccountLatest.icon,
-        models.TwitterAccountLatest.description,
-        models.TwitterAccountLatest.status,
-        models.TwitterAccountLatest.followers_count,
-        models.TwitterAccountLatest.following_count,
-        models.TwitterAccountLatest.tweet_count,
-        models.TwitterAccountLatest.updated_at
-    ).where(models.TwitterAccountLatest.id == id)))
-    return result.first()
+    try:
+        result = await (db.execute(select(models.TwitterAccountLatest).where(models.TwitterAccountLatest.id == id)))
+        twac_db = result.first()
+    except Exception as e:
+        logger.error(e)
+        return None
+    if twac_db:
+        return twac_db[0]
+    else:
+        return twac_db
 
 async def get_twac_old(db: AsyncSession, id: str):
-    result = await (db.execute(select(
-        models.TwitterAccountOld.id,
-        models.TwitterAccountOld.display_id,
-        models.TwitterAccountOld.name,
-        models.TwitterAccountOld.icon,
-        models.TwitterAccountOld.description,
-        models.TwitterAccountOld.status,
-        models.TwitterAccountOld.followers_count,
-        models.TwitterAccountOld.following_count,
-        models.TwitterAccountOld.tweet_count,
-        models.TwitterAccountOld.updated_at
-    ).where(models.TwitterAccountOld.id == id)))
-    return result.first()
+    try:
+        result = await (db.execute(select(models.TwitterAccountOld).where(models.TwitterAccountOld.id == id)))
+        twac_db = result.first()
+    except Exception as e:
+        logger.error(e)
+        return None
+    if twac_db:
+        return twac_db[0]
+    else:
+        return twac_db
 
 async def update_twac(db: AsyncSession, tw: schemas.Twitter):
     tw_db = await get_twac(db, id=tw.id)
@@ -155,7 +150,7 @@ async def update_twac(db: AsyncSession, tw: schemas.Twitter):
                                       tweet_count=tw.tweet_count,
                                       status=tw.status,
                                       updated_at=tw.updated_at)
-        await db.add(tw_db)
+        db.add(tw_db)
         await db.commit()
         await db.refresh(tw_db)
     return
@@ -187,7 +182,7 @@ async def update_twac_old(db: AsyncSession, tw: schemas.Twitter):
                                       tweet_count=tw.tweet_count,
                                       status=tw.status,
                                       updated_at=tw.updated_at)
-        await db.add(tw_db)
+        db.add(tw_db)
         await db.commit()
         await db.refresh(tw_db)
     return
@@ -195,34 +190,28 @@ async def update_twac_old(db: AsyncSession, tw: schemas.Twitter):
 
 # Twitch Channel
 async def get_tcch(db: AsyncSession, id: str):
-    result = await (db.execute(select(
-        models.TwitchChannelLatest.id,
-        models.TwitchChannelLatest.display_id,
-        models.TwitchChannelLatest.name,
-        models.TwitchChannelLatest.icon,
-        models.TwitchChannelLatest.offline_img,
-        models.TwitchChannelLatest.description,
-        models.TwitchChannelLatest.status,
-        models.TwitchChannelLatest.subsc_count,
-        models.TwitchChannelLatest.play_count,
-        models.TwitchChannelLatest.updated_at
-    ).where(models.TwitchChannelLatest.id == id)))
-    return result.first()
+    try:
+        result = await (db.execute(select(models.TwitchChannelLatest).where(models.TwitchChannelLatest.id == id)))
+        tcch_db = result.first()
+    except Exception as e:
+        logger.error(e)
+        return None
+    if tcch_db:
+        return tcch_db[0]
+    else:
+        return tcch_db
 
 async def get_tcch_old(db: AsyncSession, id: str):
-    result = await (db.execute(select(
-        models.TwitchChannelOld.id,
-        models.TwitchChannelOld.display_id,
-        models.TwitchChannelOld.name,
-        models.TwitchChannelOld.icon,
-        models.TwitchChannelOld.offline_img,
-        models.TwitchChannelOld.description,
-        models.TwitchChannelOld.status,
-        models.TwitchChannelOld.subsc_count,
-        models.TwitchChannelOld.play_count,
-        models.TwitchChannelOld.updated_at
-    ).where(models.TwitchChannelOld.id == id)))
-    return result.first()
+    try:
+        result = await (db.execute(select(models.TwitchChannelOld).where(models.TwitchChannelOld.id == id)))
+        tcch_db = result.first()
+    except Exception as e:
+        logger.error(e)
+        return None
+    if tcch_db:
+        return tcch_db[0]
+    else:
+        return tcch_db
 
 async def update_tcch(db: AsyncSession, ch: schemas.TwitchCh):
     ch_db = await get_tcch(db, id=ch.id)
@@ -251,7 +240,7 @@ async def update_tcch(db: AsyncSession, ch: schemas.TwitchCh):
                                      play_count=ch.play_count,
                                      status=ch.status,
                                      updated_at=ch.updated_at)
-        await db.add(ch_db)
+        db.add(ch_db)
         await db.commit()
         await db.refresh(ch_db)
     return
@@ -283,7 +272,7 @@ async def update_tcch_old(db: AsyncSession, ch: schemas.TwitchCh):
                                      play_count=ch.play_count,
                                      status=ch.status,
                                      updated_at=ch.updated_at)
-        await db.add(ch_db)
+        db.add(ch_db)
         await db.commit()
         await db.refresh(ch_db)
     return
@@ -291,84 +280,52 @@ async def update_tcch_old(db: AsyncSession, ch: schemas.TwitchCh):
 
 # YouTube Video
 async def get_ytvideo(db: AsyncSession, id: str):
-    result = await (db.execute(select(
-        models.YouTubeVideoLatest.id,
-        models.YouTubeVideoLatest.title,
-        models.YouTubeVideoLatest.url,
-        models.YouTubeVideoLatest.thumbnails,
-        models.YouTubeVideoLatest.description,
-        models.YouTubeVideoLatest.status,
-        models.YouTubeVideoLatest.play_count,
-        models.YouTubeVideoLatest.like_count,
-        models.YouTubeVideoLatest.comment_count,
-        models.YouTubeVideoLatest.current_viewers,
-        models.YouTubeVideoLatest.ss_time,
-        models.YouTubeVideoLatest.as_time,
-        models.YouTubeVideoLatest.ae_time,
-        models.YouTubeVideoLatest.created_at,
-        models.YouTubeVideoLatest.updated_at
-    ).where(models.YouTubeVideoLatest.id == id)))
-    return result.first()
+    try:
+        result = await (db.execute(select(models.YouTubeVideoLatest).where(models.YouTubeVideoLatest.id == id)))
+        ytvideo_db = result.first()
+    except Exception as e:
+        logger.error(e)
+        return None
+    if ytvideo_db:
+        return ytvideo_db[0]
+    else:
+        return ytvideo_db
 
 async def get_ytvideo_old(db: AsyncSession, id: str):
-    result = await (db.execute(select(
-        models.YouTubeVideoOld.id,
-        models.YouTubeVideoOld.title,
-        models.YouTubeVideoOld.url,
-        models.YouTubeVideoOld.thumbnails,
-        models.YouTubeVideoOld.description,
-        models.YouTubeVideoOld.status,
-        models.YouTubeVideoOld.play_count,
-        models.YouTubeVideoOld.like_count,
-        models.YouTubeVideoOld.comment_count,
-        models.YouTubeVideoOld.current_viewers,
-        models.YouTubeVideoOld.ss_time,
-        models.YouTubeVideoOld.as_time,
-        models.YouTubeVideoOld.ae_time,
-        models.YouTubeVideoOld.created_at,
-        models.YouTubeVideoOld.updated_at
-    ).where(models.YouTubeVideoOld.id == id)))
-    return result.first()
+    try:
+        result = await (db.execute(select(models.YouTubeVideoOld).where(models.YouTubeVideoOld.id == id)))
+        ytvideo_db = result.first()
+    except Exception as e:
+        logger.error(e)
+        return None
+    if ytvideo_db:
+        return ytvideo_db[0]
+    else:
+        return ytvideo_db
 
 async def get_ytvideos_date(db: AsyncSession):
-    result = await (db.execute(select(
-        models.YouTubeVideoLatest.id,
-        models.YouTubeVideoLatest.title,
-        models.YouTubeVideoLatest.url,
-        models.YouTubeVideoLatest.thumbnails,
-        models.YouTubeVideoLatest.description,
-        models.YouTubeVideoLatest.status,
-        models.YouTubeVideoLatest.play_count,
-        models.YouTubeVideoLatest.like_count,
-        models.YouTubeVideoLatest.comment_count,
-        models.YouTubeVideoLatest.current_viewers,
-        models.YouTubeVideoLatest.ss_time,
-        models.YouTubeVideoLatest.as_time,
-        models.YouTubeVideoLatest.ae_time,
-        models.YouTubeVideoLatest.created_at,
-        models.YouTubeVideoLatest.updated_at
-    ).order_by(desc(models.YouTubeVideoLatest.created_at))))
-    return result.all()
+    try:
+        result = await (db.execute(select(models.YouTubeVideoLatest).order_by(desc(models.YouTubeVideoLatest.created_at))))
+        ytvideos_db = result.all()
+    except Exception as e:
+        logger.error(e)
+        return []
+    if ytvideos_db:
+        return ytvideos_db[0]
+    else:
+        return ytvideos_db
 
 async def get_ytvideos_date_old(db: AsyncSession):
-    result = await (db.execute(select(
-        models.YouTubeVideoOld.id,
-        models.YouTubeVideoOld.title,
-        models.YouTubeVideoOld.url,
-        models.YouTubeVideoOld.thumbnails,
-        models.YouTubeVideoOld.description,
-        models.YouTubeVideoOld.status,
-        models.YouTubeVideoOld.play_count,
-        models.YouTubeVideoOld.like_count,
-        models.YouTubeVideoOld.comment_count,
-        models.YouTubeVideoOld.current_viewers,
-        models.YouTubeVideoOld.ss_time,
-        models.YouTubeVideoOld.as_time,
-        models.YouTubeVideoOld.ae_time,
-        models.YouTubeVideoOld.created_at,
-        models.YouTubeVideoOld.updated_at
-    ).order_by(desc(models.YouTubeVideoOld.created_at))))
-    return result.all()
+    try:
+        result = await (db.execute(select(models.YouTubeVideoOld).order_by(desc(models.YouTubeVideoOld.created_at))))
+        ytvideos_db = result.all()
+    except Exception as e:
+        logger.error(e)
+        return []
+    if ytvideos_db:
+        return ytvideos_db[0]
+    else:
+        return ytvideos_db
 
 async def update_ytvideo(db: AsyncSession, ch_id: str, video: schemas.YouTubeVideo):
     video_db = await get_ytvideo(db, id=video.id)
@@ -409,7 +366,7 @@ async def update_ytvideo(db: AsyncSession, ch_id: str, video: schemas.YouTubeVid
             created_at=video.created_at,
             updated_at=video.updated_at
         )
-        await db.add(video_db)
+        db.add(video_db)
         await db.commit()
         await db.refresh(video_db)
     return
@@ -453,7 +410,7 @@ async def update_ytvideo_old(db: AsyncSession, ch_id: str, video: schemas.YouTub
             created_at=video.created_at,
             updated_at=video.updated_at
         )
-        await db.add(video_db)
+        db.add(video_db)
         await db.commit()
         await db.refresh(video_db)
     return
@@ -461,64 +418,52 @@ async def update_ytvideo_old(db: AsyncSession, ch_id: str, video: schemas.YouTub
 
 # Twitter Space
 async def get_twspace(db: AsyncSession, id: str):
-    result = await (db.execute(select(
-        models.TwitterSpaceLatest.id,
-        models.TwitterSpaceLatest.title,
-        models.TwitterSpaceLatest.url,
-        models.TwitterSpaceLatest.status,
-        models.TwitterSpaceLatest.audience_count,
-        models.TwitterSpaceLatest.ss_time,
-        models.TwitterSpaceLatest.as_time,
-        models.TwitterSpaceLatest.ae_time,
-        models.TwitterSpaceLatest.created_at,
-        models.TwitterSpaceLatest.updated_at
-    ).where(models.TwitterSpaceLatest.id == id)))
-    return result.first()
+    try:
+        result = await (db.execute(select(models.TwitterSpaceLatest).where(models.TwitterSpaceLatest.id == id)))
+        twspace_db = result.first()
+    except Exception as e:
+        logger.error(e)
+        return None
+    if twspace_db:
+        return twspace_db[0]
+    else:
+        return twspace_db
 
 async def get_twspace_old(db: AsyncSession, id: str):
-    result = await (db.execute(select(
-        models.TwitterSpaceOld.id,
-        models.TwitterSpaceOld.title,
-        models.TwitterSpaceOld.url,
-        models.TwitterSpaceOld.status,
-        models.TwitterSpaceOld.audience_count,
-        models.TwitterSpaceOld.ss_time,
-        models.TwitterSpaceOld.as_time,
-        models.TwitterSpaceOld.ae_time,
-        models.TwitterSpaceOld.created_at,
-        models.TwitterSpaceOld.updated_at
-    ).where(models.TwitterSpaceOld.id == id)))
-    return result.first()
+    try:
+        result = await (db.execute(select(models.TwitterSpaceOld).where(models.TwitterSpaceOld.id == id)))
+        twspace_db = result.first()
+    except Exception as e:
+        logger.error(e)
+        return None
+    if twspace_db:
+        return twspace_db[0]
+    else:
+        return twspace_db
 
 async def get_twspaces_date(db: AsyncSession):
-    result = await (db.execute(select(
-        models.TwitterSpaceLatest.id,
-        models.TwitterSpaceLatest.title,
-        models.TwitterSpaceLatest.url,
-        models.TwitterSpaceLatest.status,
-        models.TwitterSpaceLatest.audience_count,
-        models.TwitterSpaceLatest.ss_time,
-        models.TwitterSpaceLatest.as_time,
-        models.TwitterSpaceLatest.ae_time,
-        models.TwitterSpaceLatest.created_at,
-        models.TwitterSpaceLatest.updated_at
-    ).order_by(desc(models.TwitterSpaceLatest.created_at))))
-    return result.all()
+    try:
+        result = await (db.execute(select(models.TwitterSpaceLatest).order_by(desc(models.TwitterSpaceLatest.created_at))))
+        twspaces_db = result.all()
+    except Exception as e:
+        logger.error(e)
+        return []
+    if twspaces_db:
+        return twspaces_db[0]
+    else:
+        return twspaces_db
 
 async def get_twspaces_date_old(db: AsyncSession):
-    result = await (db.execute(select(
-        models.TwitterSpaceOld.id,
-        models.TwitterSpaceOld.title,
-        models.TwitterSpaceOld.url,
-        models.TwitterSpaceOld.status,
-        models.TwitterSpaceOld.audience_count,
-        models.TwitterSpaceOld.ss_time,
-        models.TwitterSpaceOld.as_time,
-        models.TwitterSpaceOld.ae_time,
-        models.TwitterSpaceOld.created_at,
-        models.TwitterSpaceOld.updated_at
-    ).order_by(desc(models.TwitterSpaceOld.created_at))))
-    return result.all()
+    try:
+        result = await (db.execute(select(models.TwitterSpaceOld).order_by(desc(models.TwitterSpaceOld.created_at))))
+        twspaces_db = result.all()
+    except Exception as e:
+        logger.error(e)
+        return []
+    if twspaces_db:
+        return twspaces_db[0]
+    else:
+        return twspaces_db
 
 async def update_twspace(db: AsyncSession, tw_id: str, space: schemas.TwitterSpace):
     space_db = await get_twspace(db, id=space.id)
@@ -549,7 +494,7 @@ async def update_twspace(db: AsyncSession, tw_id: str, space: schemas.TwitterSpa
             created_at=space.created_at,
             updated_at=space.updated_at
         )
-        await db.add(space_db)
+        db.add(space_db)
         await db.commit()
         await db.refresh(space_db)
     return
@@ -583,7 +528,7 @@ async def update_twspace_old(db: AsyncSession, tw_id: str, space: schemas.Twitte
             created_at=space.created_at,
             updated_at=space.updated_at
         )
-        await db.add(space_db)
+        db.add(space_db)
         await db.commit()
         await db.refresh(space_db)
     return
@@ -591,72 +536,52 @@ async def update_twspace_old(db: AsyncSession, tw_id: str, space: schemas.Twitte
 
 # Twitch Stream
 async def get_tcstream(db: AsyncSession, id: str):
-    result = await (db.execute(select(
-        models.TwitchStreamLatest.id,
-        models.TwitchStreamLatest.title,
-        models.TwitchStreamLatest.url,
-        models.TwitchStreamLatest.thumbnail,
-        models.TwitchStreamLatest.description,
-        models.TwitchStreamLatest.status,
-        models.TwitchStreamLatest.view_count,
-        models.TwitchStreamLatest.current_viewers,
-        models.TwitchStreamLatest.as_time,
-        models.TwitchStreamLatest.ae_time,
-        models.TwitchStreamLatest.created_at,
-        models.TwitchStreamLatest.updated_at
-    ).where(models.TwitchStreamLatest.id == id)))
-    return result.first()
+    try:
+        result = await (db.execute(select(models.TwitchStreamLatest).where(models.TwitchStreamLatest.id == id)))
+        tcstream_db = result.first()
+    except Exception as e:
+        logger.error(e)
+        return None
+    if tcstream_db:
+        return tcstream_db[0]
+    else:
+        return tcstream_db
 
 async def get_tcstream_old(db: AsyncSession, id: str):
-    result = await (db.execute(select(
-        models.TwitchStreamOld.id,
-        models.TwitchStreamOld.title,
-        models.TwitchStreamOld.url,
-        models.TwitchStreamOld.thumbnail,
-        models.TwitchStreamOld.description,
-        models.TwitchStreamOld.status,
-        models.TwitchStreamOld.view_count,
-        models.TwitchStreamOld.current_viewers,
-        models.TwitchStreamOld.as_time,
-        models.TwitchStreamOld.ae_time,
-        models.TwitchStreamOld.created_at,
-        models.TwitchStreamOld.updated_at
-    ).where(models.TwitchStreamOld.id == id)))
-    return result.first()
+    try:
+        result = await (db.execute(select(models.TwitchStreamOld).where(models.TwitchStreamOld.id == id)))
+        tcstream_db = result.first()
+    except Exception as e:
+        logger.error(e)
+        return None
+    if tcstream_db:
+        return tcstream_db[0]
+    else:
+        return tcstream_db
 
 async def get_tcstreams_date(db: AsyncSession):
-    result = await (db.execute(select(
-        models.TwitchStreamLatest.id,
-        models.TwitchStreamLatest.title,
-        models.TwitchStreamLatest.url,
-        models.TwitchStreamLatest.thumbnail,
-        models.TwitchStreamLatest.description,
-        models.TwitchStreamLatest.status,
-        models.TwitchStreamLatest.view_count,
-        models.TwitchStreamLatest.current_viewers,
-        models.TwitchStreamLatest.as_time,
-        models.TwitchStreamLatest.ae_time,
-        models.TwitchStreamLatest.created_at,
-        models.TwitchStreamLatest.updated_at
-    ).order_by(desc(models.TwitchStreamLatest.created_at))))
-    return result.all()
+    try:
+        result = await (db.execute(select(models.TwitchStreamLatest).order_by(desc(models.TwitchStreamLatest.created_at))))
+        tcstreams_db = result.all()
+    except Exception as e:
+        logger.error(e)
+        return []
+    if tcstreams_db:
+        return tcstreams_db[0]
+    else:
+        return tcstreams_db
 
 async def get_tcstreams_date_old(db: AsyncSession):
-    result = await (db.execute(select(
-        models.TwitchStreamOld.id,
-        models.TwitchStreamOld.title,
-        models.TwitchStreamOld.url,
-        models.TwitchStreamOld.thumbnail,
-        models.TwitchStreamOld.description,
-        models.TwitchStreamOld.status,
-        models.TwitchStreamOld.view_count,
-        models.TwitchStreamOld.current_viewers,
-        models.TwitchStreamOld.as_time,
-        models.TwitchStreamOld.ae_time,
-        models.TwitchStreamOld.created_at,
-        models.TwitchStreamOld.updated_at
-    ).order_by(desc(models.TwitchStreamOld.created_at))))
-    return result.all()
+    try:
+        result = await (db.execute(select(models.TwitchStreamOld).order_by(desc(models.TwitchStreamOld.created_at))))
+        tcstreams_db = result.all()
+    except Exception as e:
+        logger.error(e)
+        return []
+    if tcstreams_db:
+        return tcstreams_db[0]
+    else:
+        return tcstreams_db
 
 async def update_tcstream(db: AsyncSession, ch_id: str, stream: schemas.TwitchStream):
     stream_db = await get_tcstream(db, id=stream.id)
@@ -699,7 +624,7 @@ async def update_tcstream(db: AsyncSession, ch_id: str, stream: schemas.TwitchSt
             created_at=stream.created_at,
             updated_at=stream.updated_at
         )
-        await db.add(stream_db)
+        db.add(stream_db)
         await db.commit()
         await db.refresh(stream_db)
     return
@@ -745,7 +670,7 @@ async def update_tcstream_old(db: AsyncSession, ch_id: str, stream: schemas.Twit
             created_at=stream.created_at,
             updated_at=stream.updated_at
         )
-        await db.add(stream_db)
+        db.add(stream_db)
         await db.commit()
         await db.refresh(stream_db)
     return

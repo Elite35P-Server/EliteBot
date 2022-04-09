@@ -2,7 +2,7 @@ import asyncio
 import aiohttp
 import os
 from discord.ext import tasks, commands
-from cogs import async_crud, schemas
+from cogs import async_crud, schemas, models
 from cogs.db import async_session
 from logging import getLogger, config
 from main import log_config
