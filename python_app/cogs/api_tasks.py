@@ -31,7 +31,7 @@ class APITasks(commands.Cog):
         }
         async with session.get(url=self.api_base + url, headers=headers, params=params) as resp:
             if resp.status != 200:
-                self.logger.error('API connection failed.', resp.text)
+                self.logger.error(f'API connection failed. Status: {resp.status}')
                 return
             return await resp.json()
         
@@ -75,7 +75,7 @@ class APITasks(commands.Cog):
                         'limit': limit,
                     }
                     data = await self.aioget(session, request_url, params)
-                    if data == []:
+                    if data == [] or data == None:
                         break
                     for video in data:
                         youtube_video = schemas.YouTubeVideo(
@@ -102,7 +102,7 @@ class APITasks(commands.Cog):
                             self.logger.error(e)
                     skip += 35
                     limit += 35
-                    await asyncio.sleep(float(0.2))
+                    await asyncio.sleep(float(0.1))
                 
     
     # Get Twitch data.
@@ -144,7 +144,7 @@ class APITasks(commands.Cog):
                         'limit': limit,
                     }
                     data = await self.aioget(session, request_url, params)
-                    if data == []:
+                    if data == [] or data == None:
                         break
                     for stream in data:
                         twitch_stream = schemas.TwitchStream(
@@ -171,7 +171,7 @@ class APITasks(commands.Cog):
                             self.logger.error(e)
                     skip += 35
                     limit += 35
-                    await asyncio.sleep(float(0.2))
+                    await asyncio.sleep(float(0.1))
     
     
     # Get Twitter data.
@@ -213,7 +213,7 @@ class APITasks(commands.Cog):
                         'limit': limit,
                     }
                     data = await self.aioget(session, request_url, params)
-                    if data == []:
+                    if data == [] or data == None:
                         break
                     for space in data:
                         twitter_space = schemas.TwitterSpace(
@@ -235,7 +235,7 @@ class APITasks(commands.Cog):
                             self.logger.error(e)
                     skip += 35
                     limit += 35
-                    await asyncio.sleep(float(0.2))
+                    await asyncio.sleep(float(0.1))
 
               
     @youtube_data.before_loop
